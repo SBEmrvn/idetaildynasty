@@ -333,6 +333,33 @@ footer {
 }
 footer p { color: var(--gray); font-size: 0.85rem; line-height: 1.8; }
 
+/* CONTACT */
+.contact-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* GALLERY */
+.gallery-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+.gallery-ba {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* PILL TABS */
+.pill-tabs {
+  display: flex;
+  gap: 0.4rem;
+  border-radius: 50px;
+  padding: 0.4rem;
+}
+
+/* ADMIN TABLE */
+.admin-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 @keyframes tagSwing {
   0%   { transform: rotate(-6deg); }
   30%  { transform: rotate(6deg); }
@@ -393,25 +420,7 @@ footer p { color: var(--gray); font-size: 0.85rem; line-height: 1.8; }
 
 /* RESPONSIVE */
 
-/* Mobile — up to 480px */
-@media (max-width: 480px) {
-  nav { padding: 0 1rem; }
-  .nav-logo { font-size: 1.2rem; }
-  .form-grid { grid-template-columns: 1fr; }
-  .hero h1 { font-size: 2.4rem; }
-  .hero p { font-size: 0.95rem; }
-  .btn-primary, .btn-outline { padding: 0.8rem 1.6rem; font-size: 0.78rem; }
-  .section-title { font-size: 1.8rem; }
-  .services-grid { grid-template-columns: 1fr; gap: 1.2rem; }
-  .service-card { padding: 1.5rem 1.2rem; }
-  .service-name { font-size: 1.2rem; }
-  .promos-grid { grid-template-columns: 1fr; }
-  .auth-box { padding: 2rem 1.2rem; }
-  section { padding: 3rem 1rem; }
-  footer { padding: 2rem 1rem; }
-}
-
-/* Tablet — 481px to 768px */
+/* Tablet — up to 768px */
 @media (max-width: 768px) {
   .form-grid { grid-template-columns: 1fr; }
   .nav-hamburger { display: flex; }
@@ -443,8 +452,39 @@ footer p { color: var(--gray); font-size: 0.85rem; line-height: 1.8; }
   section { padding: 4rem 1.2rem; }
   .services-grid { grid-template-columns: 1fr; }
   .promos-grid { grid-template-columns: 1fr; }
-  .booking-container { padding: 0 1rem; }
+  .booking-container { padding: 0; }
   .auth-box { padding: 2rem 1.5rem; }
+
+  /* Contact page — stack columns */
+  .contact-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+
+  /* Gallery — stack before/after */
+  .gallery-grid { grid-template-columns: 1fr !important; }
+  .gallery-ba { grid-template-columns: 1fr 1fr !important; }
+
+  /* Dashboard & Reviews pill tabs — scroll horizontally */
+  .pill-tabs { width: 100% !important; overflow-x: auto; flex-wrap: nowrap !important; }
+
+  /* Admin table — allow horizontal scroll */
+  .admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+
+/* Mobile — up to 480px */
+@media (max-width: 480px) {
+  nav { padding: 0 1rem; }
+  .nav-logo { font-size: 1.2rem; }
+  .hero p { font-size: 0.95rem; }
+  .btn-primary, .btn-outline { padding: 0.8rem 1.6rem; font-size: 0.78rem; }
+  .services-grid { gap: 1.2rem; }
+  .service-card { padding: 1.5rem 1.2rem; }
+  .service-name { font-size: 1.2rem; }
+  .promos-grid { grid-template-columns: 1fr; }
+  .auth-box { padding: 2rem 1.2rem; }
+  section { padding: 3rem 1rem; }
+  footer { padding: 2rem 1rem; }
+
+  /* Gallery before/after stack vertically on very small screens */
+  .gallery-ba { grid-template-columns: 1fr !important; }
 }
 
 /* Tablet landscape & small desktop — 769px to 1024px */
@@ -453,4 +493,6 @@ footer p { color: var(--gray); font-size: 0.85rem; line-height: 1.8; }
   .services-grid { grid-template-columns: repeat(2, 1fr); }
   .promos-grid { grid-template-columns: repeat(2, 1fr); }
   .section-title { font-size: clamp(1.8rem, 4vw, 3rem); }
+  .contact-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr) !important; }
 }

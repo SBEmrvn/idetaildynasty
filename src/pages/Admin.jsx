@@ -587,7 +587,7 @@ export default function Admin({ user }) {
                 {filteredBookings.length === 0 ? (
                   <p style={{ color: 'var(--gray)', textAlign: 'center', padding: '3rem' }}>No bookings found.</p>
                 ) : (
-                  <div style={{ overflowX: 'auto' }}>
+                  <div className="admin-table-wrap">
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                       <thead>
                         <tr style={{ borderBottom: '1px solid rgba(201,168,76,0.3)' }}>

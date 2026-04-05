@@ -65,10 +65,10 @@ export default function Gallery() {
               </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }} className="gallery-grid">
               {filtered.map(item => (
                 <div key={item.id} style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', overflow: 'hidden' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
+                  <div style={{ display: 'grid', gap: '2px' }} className="gallery-ba">
                     {item.before_url && (
                       <div style={{ position: 'relative' }}>
                         <img src={item.before_url} alt="Before" style={{ width: '100%', height: '200px', objectFit: 'cover', display: 'block' }} />

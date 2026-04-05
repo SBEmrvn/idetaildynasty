@@ -76,7 +76,7 @@ export default function Dashboard({ user }) {
 
         {/* PILL TABS */}
         {!loading && bookings.length > 0 && (
-          <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '2rem', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '50px', padding: '0.4rem', width: 'fit-content' }}>
+          <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '2rem', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '50px', padding: '0.4rem' }} className="pill-tabs">
             {[['upcoming', `Upcoming (${upcoming.length})`], ['past', `Past (${past.length})`], ['all', `All (${bookings.length})`]].map(([key, label]) => (
               <button key={key} onClick={() => setTab(key)} style={{
                 background: tab === key ? 'var(--gold)' : 'transparent',

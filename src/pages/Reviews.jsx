@@ -110,7 +110,7 @@ export default function Reviews({ user }) {
 
           {/* FILTER PILLS */}
           {reviews.length > 0 && (
-            <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '2rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '50px', padding: '0.4rem', width: 'fit-content' }}>
+            <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '2rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '50px', padding: '0.4rem' }} className="pill-tabs">
               {[['all', `All (${reviews.length})`], ['5', `5★ (${reviews.filter(r=>r.rating===5).length})`], ['4', `4★ (${reviews.filter(r=>r.rating===4).length})`], ['3', `3★ (${reviews.filter(r=>r.rating===3).length})`], ['2', `2★ (${reviews.filter(r=>r.rating<=2).length})`]].map(([key, label]) => (
                 <button key={key} onClick={() => setFilter(key)} style={{
                   background: filter === key ? 'var(--gold)' : 'transparent',
