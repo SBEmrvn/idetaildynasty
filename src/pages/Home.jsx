@@ -5,7 +5,7 @@ import { supabase } from '../supabase'
 export default function Home() {
   const [services, setServices] = useState([])
   const [topPromo, setTopPromo] = useState(null)
-  const [info, setInfo] = useState({ phone: '+000 000 0000', email: 'hello@idetaildynasty.com', location: 'Your City' })
+  const [info, setInfo] = useState({ phone: '+250 792 575 132', email: 'idetaildynastyrw@gmail.com', location: 'Kigali, Rwanda' })
 
   useEffect(() => {
     const fetchServices = async () => {

@@ -9,9 +9,9 @@ export default function Contact() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [info, setInfo] = useState({
-    phone: '+250 000 000 000',
-    whatsapp: '+250000000000',
-    email: 'hello@idetaildynasty.com',
+    phone: '+250 792 575 132',
+    whatsapp: '0792575132',
+    email: 'idetaildynastyrw@gmail.com',
     location: 'Kigali, Rwanda',
     business_hours: ''
   })

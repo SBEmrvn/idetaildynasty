@@ -74,7 +74,7 @@ export default function Admin({ user }) {
   const [galleryMsg, setGalleryMsg] = useState('')
   const [galleryUploading, setGalleryUploading] = useState(false)
   const [settings, setSettings] = useState({
-    phone: '', whatsapp: '', email: '', location: '', business_hours: '',
+    phone: '+250 792 575 132', whatsapp: '0792575132', email: 'idetaildynastyrw@gmail.com', location: 'Kigali, Rwanda', business_hours: '',
     enable_reviews: true, enable_gallery: true, enable_promos: true,
     enable_whatsapp: true, enable_photo_upload: false,
     enable_price_calculator: false, enable_dashboard: true

@@ -9,7 +9,7 @@ export default function Services() {
   const [calcService, setCalcService] = useState('')
   const [calcSize, setCalcSize] = useState('sedan')
   const [filter, setFilter] = useState('all')
-  const [info, setInfo] = useState({ phone: '+000 000 0000', email: 'hello@idetaildynasty.com', location: 'Your City' })
+  const [info, setInfo] = useState({ phone: '+250 792 575 132', email: 'idetaildynastyrw@gmail.com', location: 'Kigali, Rwanda' })
 
   useEffect(() => {
     const fetch = async () => {

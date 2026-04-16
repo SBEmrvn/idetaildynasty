@@ -5,7 +5,7 @@ import { supabase } from '../supabase'
 export default function Gallery() {
   const [items, setItems] = useState([])
   const [filter, setFilter] = useState('all')
-  const [info, setInfo] = useState({ phone: '+000 000 0000', email: 'hello@idetaildynasty.com', location: 'Kigali, Rwanda' })
+  const [info, setInfo] = useState({ phone: '+250 792 575 132', email: 'idetaildynastyrw@gmail.com', location: 'Kigali, Rwanda' })
 
   useEffect(() => {
     const fetch = async () => {
