@@ -158,12 +158,6 @@ export default function Services() {
                       </span>
                     </div>
                   </div>
-                  {s.suv_surcharge > 0 && (
-                    <p style={{ color: '#aaa', fontSize: '0.73rem', marginTop: '0.6rem' }}>
-                      SUV / 4x4 <span style={{ color: '#E8C96D' }}>+RWF {Number(s.suv_surcharge).toLocaleString()}</span>
-                    </p>
-                  )}
-                </div>
                 <div style={{ flexGrow: 1 }} />
                 <Link to="/booking" style={{
                   display: 'block', textAlign: 'center',

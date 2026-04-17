@@ -101,11 +101,6 @@ export default function Home() {
                 </ul>
               )}
               <p className="service-price" style={{ marginTop: '1rem' }}>RWF {Number(s.price).toLocaleString()}</p>
-              {s.suv_surcharge > 0 && (
-                <p style={{ color: 'var(--gray)', fontSize: '0.75rem', marginTop: '0.2rem' }}>
-                  SUV / 4x4: <span style={{ color: 'var(--gold)' }}>+RWF {Number(s.suv_surcharge).toLocaleString()}</span>
-                </p>
-              )}
             </div>
           ))}
         </div>

@@ -166,7 +166,7 @@ export default function Booking({ user }) {
                 <option value="">— Choose a service —</option>
                 {services.map((s) => (
                   <option key={s.id} value={s.name}>
-                    {s.badge ? `★ ` : ''}{s.name} — RWF {Number(s.price).toLocaleString()}{s.suv_surcharge > 0 ? ` (+${Number(s.suv_surcharge).toLocaleString()} SUV)` : ''}
+                    {s.badge ? `★ ` : ''}{s.name} — RWF {Number(s.price).toLocaleString()}
                   </option>
                 ))}
               </select>
