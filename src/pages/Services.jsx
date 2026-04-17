@@ -17,17 +17,14 @@ export default function Services() {
       setServices(data || [])
     }
     fetch()
-
     const fetchInfo = async () => {
       const { data } = await supabase.from('settings').select('phone,email,location').limit(1).single()
       if (data) setInfo(data)
     }
     fetchInfo()
-
     const channel = supabase.channel('services-public')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'services' }, fetch)
       .subscribe()
-
     return () => supabase.removeChannel(channel)
   }, [])
 
@@ -38,8 +35,7 @@ export default function Services() {
     <>
       {/* HERO */}
       <section style={{
-        paddingTop: '8rem', paddingBottom: '4rem',
-        textAlign: 'center',
+        paddingTop: '8rem', paddingBottom: '4rem', textAlign: 'center',
         background: 'linear-gradient(135deg, #0A0A0A 0%, #1a1200 50%, #0A0A0A 100%)',
         position: 'relative', overflow: 'hidden'
       }}>
@@ -60,7 +56,7 @@ export default function Services() {
 
           {/* FILTER PILLS */}
           {cats.length > 1 && (
-            <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '2.5rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '50px', padding: '0.4rem', width: 'fit-content', margin: '0 auto 2.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '50px', padding: '0.4rem', width: 'fit-content', margin: '0 auto 2.5rem' }}>
               {cats.map(c => (
                 <button key={c} onClick={() => setFilter(c)} style={{
                   background: filter === c ? 'var(--gold)' : 'transparent',
@@ -78,6 +74,8 @@ export default function Services() {
           <div className="services-grid">
             {filtered.map((s) => (
               <div className="service-card" key={s.id} style={{ position: 'relative', border: s.badge ? '1px solid rgba(201,168,76,0.5)' : undefined }}>
+
+                {/* BADGE */}
                 {s.badge && (
                   <span style={{
                     position: 'absolute', top: '-1px', right: '1.5rem',
@@ -87,8 +85,12 @@ export default function Services() {
                     padding: '0.25rem 0.8rem',
                   }}>{s.badge}</span>
                 )}
+
+                {/* NAME & DESC */}
                 <h3 className="service-name" style={{ marginTop: s.badge ? '0.8rem' : 0 }}>{s.name}</h3>
                 <p className="service-desc">{s.description}</p>
+
+                {/* ACTIVITIES */}
                 {s.activities && s.activities.trim() ? (
                   <ul style={{ margin: '1rem 0 0', padding: 0, listStyle: 'none', maxHeight: '220px', overflowY: 'auto' }}>
                     {(() => {
@@ -111,17 +113,17 @@ export default function Services() {
                 ) : (
                   <p style={{ color: 'rgba(201,168,76,0.3)', fontSize: '0.78rem', marginTop: '0.8rem', fontStyle: 'italic' }}>Activities coming soon</p>
                 )}
+
+                {/* SPACER */}
                 <div style={{ flexGrow: 1 }} />
-                <div style={{ textAlign: 'center', margin: '1.8rem 0 0', position: 'relative' }}>
-                  {/* ROPE */}
+
+                {/* PRICE TAG */}
+                <div style={{ textAlign: 'center', margin: '1.8rem 0 0' }}>
                   <div style={{
-                    width: '2px',
-                    height: '28px',
+                    width: '2px', height: '28px',
                     background: 'repeating-linear-gradient(180deg, #a07830 0px, #c9a84c 3px, #a07830 6px)',
-                    margin: '0 auto',
-                    borderRadius: '1px',
+                    margin: '0 auto', borderRadius: '1px',
                   }} />
-                  {/* SERRATED CIRCLE TAG */}
                   <div style={{
                     position: 'relative',
                     width: 'clamp(180px, 40vw, 280px)',
@@ -149,8 +151,7 @@ export default function Services() {
                       position: 'absolute', inset: 0,
                       display: 'flex', flexDirection: 'column',
                       alignItems: 'center', justifyContent: 'center',
-                      paddingBottom: '45px',
-                      gap: '4px',
+                      paddingBottom: '45px', gap: '4px',
                     }}>
                       <span style={{ color: '#E8C96D', fontSize: 'clamp(0.7rem, 1.5vw, 1.1rem)', letterSpacing: '3px', textTransform: 'uppercase', fontFamily: 'var(--font-body)', fontWeight: '500' }}>RWF</span>
                       <span style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.4rem, 3.5vw, 3rem)', color: '#FFD966', fontWeight: '700', lineHeight: 1 }}>
@@ -158,7 +159,9 @@ export default function Services() {
                       </span>
                     </div>
                   </div>
-                <div style={{ flexGrow: 1 }} />
+                </div>
+
+                {/* BOOK BUTTON */}
                 <Link to="/booking" style={{
                   display: 'block', textAlign: 'center',
                   marginTop: '1.5rem', padding: '0.65rem 1.5rem',
@@ -174,6 +177,7 @@ export default function Services() {
                 >
                   Book This
                 </Link>
+
               </div>
             ))}
           </div>
@@ -220,7 +224,7 @@ export default function Services() {
       {/* FOOTER */}
       <footer>
         <div className="footer-logo">iDetail Dynasty</div>
-        <p>Premium car detailing -- done right, every time.<br />
+        <p>Premium car detailing — done right, every time.<br />
           {info.location} | {info.phone} | {info.email}
         </p>
         <p style={{ marginTop: '1rem', fontSize: '0.75rem' }}>© 2026 iDetail Dynasty. All rights reserved.</p>
