@@ -94,13 +94,14 @@ export default function Promos() {
         .promo-cta-btn.green-outline:hover { background: #4CAF50; color: var(--black); }
 
         /* SECONDARY CARDS */
-        .promo-secondary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; }
-        .promo-secondary-card { background: var(--dark2); border: 1px solid rgba(201,168,76,0.1); border-radius: 16px; padding: 1.8rem; transition: border-color 0.3s, transform 0.3s; }
-        .promo-secondary-card:hover { border-color: rgba(201,168,76,0.35); transform: translateY(-3px); }
-        .promo-secondary-icon { font-size: 2rem; margin-bottom: 0.8rem; }
-        .promo-secondary-title { font-family: var(--font-display); font-size: 1.1rem; color: var(--white); margin-bottom: 0.6rem; }
-        .promo-secondary-desc { color: var(--gray); font-size: 0.85rem; line-height: 1.6; margin-bottom: 0.8rem; }
-        .promo-secondary-tag { color: var(--gold); font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; }
+        .promo-secondary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .promo-secondary-card { background: var(--dark2); border: 1px solid rgba(201,168,76,0.2); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s; }
+        .promo-secondary-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(201,168,76,0.1); border-color: rgba(201,168,76,0.4); }
+        .promo-secondary-body { padding: 2rem; flex: 1; display: flex; flex-direction: column; }
+        .promo-secondary-icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
+        .promo-secondary-title { font-family: var(--font-display); font-size: 1.3rem; color: var(--white); margin-bottom: 0.6rem; }
+        .promo-secondary-desc { color: var(--gray); font-size: 0.88rem; line-height: 1.65; margin-bottom: auto; padding-bottom: 1.2rem; }
+        .promo-secondary-tag { color: var(--gold); font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 0.3rem 0; border-top: 1px solid rgba(201,168,76,0.15); margin-top: 1rem; display: block; }
 
         /* LOYALTY */
         .promo-stamps { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
@@ -219,10 +220,14 @@ export default function Promos() {
           <div className="promo-secondary-grid">
             {secondary.map((item, i) => (
               <div key={i} className="promo-secondary-card">
-                <div className="promo-secondary-icon">{item.icon}</div>
-                <h4 className="promo-secondary-title">{item.title}</h4>
-                <p className="promo-secondary-desc">{item.desc}</p>
-                <span className="promo-secondary-tag">{item.tag}</span>
+                <div className="promo-card-bar outline" />
+                <div className="promo-secondary-body">
+                  <span className="promo-card-tag outline">{item.tag}</span>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.8rem' }}>{item.icon}</div>
+                  <h4 className="promo-secondary-title">{item.title}</h4>
+                  <p className="promo-secondary-desc">{item.desc}</p>
+                  <a href={WA_GENERAL} target="_blank" rel="noreferrer" className="promo-cta-btn gold-outline" style={{ marginTop: '1.2rem' }}>Book on WhatsApp</a>
+                </div>
               </div>
             ))}
           </div>
