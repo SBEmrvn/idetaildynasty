@@ -74,32 +74,34 @@ export default function Gallery() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
               {filtered.map(item => {
-                const imgs = [item.before_url, item.after_url].filter(Boolean)
+                const imgs = item.images?.length ? item.images : [item.before_url, item.after_url].filter(Boolean)
                 return (
-                  <div key={item.id} onClick={() => setLightbox({ item, imgIndex: 0 })} style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', overflow: 'hidden', cursor: 'pointer', transition: 'border-color 0.2s' }}
+                  <div key={item.id} onClick={() => setLightbox({ item, imgIndex: 0, imgs })} style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', overflow: 'hidden', cursor: 'pointer', transition: 'border-color 0.2s' }}
                     onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(201,168,76,0.5)'}
                     onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(201,168,76,0.15)'}
                   >
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
-                      {[{ url: item.before_url, label: 'BEFORE', labelStyle: { background: 'rgba(0,0,0,0.7)', color: 'var(--gray)' } },
-                        { url: item.after_url,  label: 'AFTER',  labelStyle: { background: 'rgba(201,168,76,0.85)', color: 'var(--black)' } }
-                      ].map(({ url, label, labelStyle }) => (
-                        <div key={label} style={{ position: 'relative', paddingBottom: '100%', background: 'var(--dark2)', overflow: 'hidden' }}>
-                          {url
-                            ? <img src={url} alt={label} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
-                            : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.75rem', letterSpacing: '2px' }}>NO IMAGE</span></div>
-                          }
-                          <span style={{ position: 'absolute', bottom: '0.5rem', left: '0.5rem', ...labelStyle, fontSize: '0.65rem', fontWeight: '600', padding: '0.2rem 0.6rem', letterSpacing: '1.5px' }}>{label}</span>
-                        </div>
-                      ))}
+                    {/* COVER */}
+                    <div style={{ position: 'relative', paddingBottom: '65%', overflow: 'hidden', background: 'var(--dark2)' }}>
+                      {imgs[0] && <img src={imgs[0]} alt="cover" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />}
+                      <span style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: 'rgba(0,0,0,0.7)', color: 'var(--gold)', fontSize: '0.7rem', padding: '0.2rem 0.6rem' }}>📷 {imgs.length}</span>
                     </div>
+                    {/* THUMBNAIL STRIP */}
+                    {imgs.length > 1 && (
+                      <div style={{ display: 'flex', gap: '2px', height: '55px' }}>
+                        {imgs.slice(1, 5).map((url, i) => (
+                          <div key={i} style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+                            <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            {i === 3 && imgs.length > 5 && <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.75rem' }}>+{imgs.length - 5}</div>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <div style={{ padding: '1rem 1.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
                         <p style={{ color: 'var(--white)', fontWeight: '500', marginBottom: '0.2rem' }}>{item.title || 'Detail Job'}</p>
                         {item.service && <p style={{ color: 'var(--gold)', fontSize: '0.8rem' }}>{item.service}</p>}
-                        {item.caption && <p style={{ color: 'var(--gray)', fontSize: '0.82rem', marginTop: '0.3rem' }}>{item.caption}</p>}
                       </div>
-                      {imgs.length > 0 && <span style={{ color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '1px', whiteSpace: 'nowrap', marginLeft: '1rem' }}>TAP TO EXPAND ↗</span>}
+                      <span style={{ color: 'var(--gold)', fontSize: '0.72rem', letterSpacing: '1px', whiteSpace: 'nowrap', marginLeft: '1rem' }}>TAP ↗</span>
                     </div>
                   </div>
                 )
@@ -108,51 +110,44 @@ export default function Gallery() {
 
             {/* LIGHTBOX */}
             {lightbox && (() => {
-              const { item, imgIndex } = lightbox
-              const imgs = [
-                item.before_url && { url: item.before_url, label: 'BEFORE' },
-                item.after_url  && { url: item.after_url,  label: 'AFTER' }
-              ].filter(Boolean)
-              const current = imgs[imgIndex]
+              const { item, imgIndex, imgs } = lightbox
               return (
-                <div onClick={() => setLightbox(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                <div onClick={() => setLightbox(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
                   {/* CLOSE */}
-                  <button onClick={() => setLightbox(null)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'transparent', border: '1px solid rgba(201,168,76,0.4)', color: 'var(--gold)', fontSize: '1.2rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+                  <button onClick={() => setLightbox(null)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'transparent', border: '1px solid rgba(201,168,76,0.4)', color: 'var(--gold)', fontSize: '1.2rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>✕</button>
 
-                  {/* TITLE */}
+                  {/* COUNTER + TITLE */}
                   <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
                     <p style={{ color: 'var(--white)', fontWeight: '500', fontSize: '1.1rem' }}>{item.title || 'Detail Job'}</p>
                     {item.service && <p style={{ color: 'var(--gold)', fontSize: '0.8rem', letterSpacing: '1px' }}>{item.service}</p>}
+                    <p style={{ color: 'var(--gray)', fontSize: '0.75rem', marginTop: '0.3rem' }}>{imgIndex + 1} / {imgs.length}</p>
                   </div>
 
                   {/* MAIN IMAGE */}
                   <div onClick={e => e.stopPropagation()} style={{ position: 'relative', maxWidth: '900px', width: '100%' }}>
-                    <img src={current.url} alt={current.label} style={{ width: '100%', maxHeight: '70vh', objectFit: 'contain', display: 'block', borderRadius: '2px' }} />
-                    <span style={{ position: 'absolute', bottom: '1rem', left: '1rem', background: current.label === 'BEFORE' ? 'rgba(0,0,0,0.8)' : 'rgba(201,168,76,0.9)', color: current.label === 'BEFORE' ? 'var(--gray)' : 'var(--black)', fontSize: '0.75rem', fontWeight: '600', padding: '0.3rem 0.8rem', letterSpacing: '2px' }}>{current.label}</span>
-
-                    {/* PREV / NEXT */}
+                    <img src={imgs[imgIndex]} alt={`Photo ${imgIndex + 1}`} style={{ width: '100%', maxHeight: '68vh', objectFit: 'contain', display: 'block', borderRadius: '2px' }} />
                     {imgs.length > 1 && (
                       <>
-                        <button onClick={e => { e.stopPropagation(); setLightbox({ item, imgIndex: (imgIndex - 1 + imgs.length) % imgs.length }) }}
-                          style={{ position: 'absolute', left: '-3rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: '1px solid rgba(201,168,76,0.4)', color: 'var(--gold)', fontSize: '1.2rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>‹</button>
-                        <button onClick={e => { e.stopPropagation(); setLightbox({ item, imgIndex: (imgIndex + 1) % imgs.length }) }}
-                          style={{ position: 'absolute', right: '-3rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: '1px solid rgba(201,168,76,0.4)', color: 'var(--gold)', fontSize: '1.2rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>›</button>
+                        <button onClick={e => { e.stopPropagation(); setLightbox(prev => ({ ...prev, imgIndex: (prev.imgIndex - 1 + imgs.length) % imgs.length })) }}
+                          style={{ position: 'absolute', left: '-3rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: '1px solid rgba(201,168,76,0.4)', color: 'var(--gold)', fontSize: '1.4rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>‹</button>
+                        <button onClick={e => { e.stopPropagation(); setLightbox(prev => ({ ...prev, imgIndex: (prev.imgIndex + 1) % imgs.length })) }}
+                          style={{ position: 'absolute', right: '-3rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: '1px solid rgba(201,168,76,0.4)', color: 'var(--gold)', fontSize: '1.4rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>›</button>
                       </>
                     )}
                   </div>
 
                   {/* THUMBNAILS */}
                   {imgs.length > 1 && (
-                    <div onClick={e => e.stopPropagation()} style={{ display: 'flex', gap: '0.8rem', marginTop: '1rem' }}>
-                      {imgs.map((img, i) => (
-                        <div key={i} onClick={() => setLightbox({ item, imgIndex: i })} style={{ width: '70px', height: '70px', border: `2px solid ${i === imgIndex ? 'var(--gold)' : 'rgba(255,255,255,0.15)'}`, overflow: 'hidden', cursor: 'pointer', flexShrink: 0, transition: 'border-color 0.2s' }}>
-                          <img src={img.url} alt={img.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div onClick={e => e.stopPropagation()} style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '900px' }}>
+                      {imgs.map((url, i) => (
+                        <div key={i} onClick={() => setLightbox(prev => ({ ...prev, imgIndex: i }))} style={{ width: '60px', height: '60px', border: `2px solid ${i === imgIndex ? 'var(--gold)' : 'rgba(255,255,255,0.1)'}`, overflow: 'hidden', cursor: 'pointer', flexShrink: 0, transition: 'border-color 0.2s' }}>
+                          <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                       ))}
                     </div>
                   )}
 
-                  {item.caption && <p style={{ color: 'var(--gray)', fontSize: '0.85rem', marginTop: '1rem', textAlign: 'center', maxWidth: '600px' }}>{item.caption}</p>}
+                  {item.caption && <p style={{ color: 'var(--gray)', fontSize: '0.82rem', marginTop: '1rem', textAlign: 'center', maxWidth: '600px', lineHeight: '1.6' }}>{item.caption}</p>}
                 </div>
               )
             })()}

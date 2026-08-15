@@ -70,9 +70,10 @@ export default function Admin({ user }) {
   const [editInventory, setEditInventory] = useState(null)
   const [contactMessages, setContactMessages] = useState([])
   const [gallery, setGallery] = useState([])
-  const [newGalleryItem, setNewGalleryItem] = useState({ title: '', service: '', caption: '', before_url: '', after_url: '' })
+  const [newGalleryItem, setNewGalleryItem] = useState({ title: '', service: '', caption: '', images: [] })
   const [galleryMsg, setGalleryMsg] = useState('')
   const [galleryUploading, setGalleryUploading] = useState(false)
+  const [editGalleryItem, setEditGalleryItem] = useState(null)
   const [settings, setSettings] = useState({
     phone: '', whatsapp: '', email: '', location: '', business_hours: '',
     enable_reviews: true, enable_gallery: true, enable_promos: true,
@@ -291,11 +292,11 @@ export default function Admin({ user }) {
   }
 
   // GALLERY ACTIONS
-  const uploadGalleryImage = async (file, type) => {
+  const uploadGalleryImage = async (file) => {
     if (!file) return null
     setGalleryUploading(true)
     const ext = file.name.split('.').pop()
-    const path = `gallery/${Date.now()}-${type}.${ext}`
+    const path = `gallery/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
     const { error } = await supabase.storage.from('gallery').upload(path, file, { upsert: true })
     setGalleryUploading(false)
     if (error) { setGalleryMsg('Upload failed: ' + error.message); return null }
@@ -305,10 +306,32 @@ export default function Admin({ user }) {
 
   const addGalleryItem = async (e) => {
     e.preventDefault()
-    if (!newGalleryItem.before_url && !newGalleryItem.after_url) { setGalleryMsg('Please provide at least one image URL or upload a file.'); return }
-    await supabase.from('gallery').insert({ ...newGalleryItem })
+    if (!newGalleryItem.images || newGalleryItem.images.length === 0) { setGalleryMsg('Please upload at least one image.'); return }
+    await supabase.from('gallery').insert({
+      title: newGalleryItem.title,
+      service: newGalleryItem.service,
+      caption: newGalleryItem.caption,
+      images: newGalleryItem.images,
+      before_url: newGalleryItem.images[0] || '',
+      after_url: newGalleryItem.images[1] || '',
+    })
     setGalleryMsg('Gallery item added! ✅')
-    setNewGalleryItem({ title: '', service: '', caption: '', before_url: '', after_url: '' })
+    setNewGalleryItem({ title: '', service: '', caption: '', images: [] })
+    await fetchAll()
+    setTimeout(() => setGalleryMsg(''), 3000)
+  }
+
+  const saveEditGalleryItem = async () => {
+    await supabase.from('gallery').update({
+      title: editGalleryItem.title,
+      service: editGalleryItem.service,
+      caption: editGalleryItem.caption,
+      images: editGalleryItem.images,
+      before_url: editGalleryItem.images[0] || '',
+      after_url: editGalleryItem.images[1] || '',
+    }).eq('id', editGalleryItem.id)
+    setEditGalleryItem(null)
+    setGalleryMsg('Gallery item updated! ✅')
     await fetchAll()
     setTimeout(() => setGalleryMsg(''), 3000)
   }
@@ -317,6 +340,10 @@ export default function Admin({ user }) {
     if (!window.confirm('Delete this gallery item?')) return
     await supabase.from('gallery').delete().eq('id', id)
     await fetchAll()
+  }
+
+  const removeImageFromList = (list, idx, setter) => {
+    setter(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))
   }
 
   // REVIEWS ACTIONS
@@ -1158,33 +1185,83 @@ export default function Admin({ user }) {
             {/* =================== GALLERY TAB =================== */}
             {tab === 'gallery' && (
               <div>
+                {/* EDIT GALLERY MODAL */}
+                {editGalleryItem && (
+                  <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
+                    <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.3)', padding: '2rem', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
+                      <h3 style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Edit Gallery Item</h3>
+                      <div className="form-grid">
+                        <div className="form-group"><label>Title</label><input value={editGalleryItem.title || ''} onChange={e => setEditGalleryItem({ ...editGalleryItem, title: e.target.value })} /></div>
+                        <div className="form-group"><label>Service</label><input value={editGalleryItem.service || ''} onChange={e => setEditGalleryItem({ ...editGalleryItem, service: e.target.value })} /></div>
+                        <div className="form-group full"><label>Caption</label><textarea value={editGalleryItem.caption || ''} onChange={e => setEditGalleryItem({ ...editGalleryItem, caption: e.target.value })} style={{ minHeight: '60px' }} /></div>
+                        <div className="form-group full">
+                          <label>Current Images ({(editGalleryItem.images || []).length})</label>
+                          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.8rem' }}>
+                            {(editGalleryItem.images || []).map((url, i) => (
+                              <div key={i} style={{ position: 'relative', width: '80px', height: '80px' }}>
+                                <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <button onClick={() => setEditGalleryItem(prev => ({ ...prev, images: prev.images.filter((_, j) => j !== i) }))} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(244,67,54,0.9)', color: '#fff', border: 'none', width: '18px', height: '18px', fontSize: '0.65rem', cursor: 'pointer', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+                                {i === 0 && <span style={{ position: 'absolute', bottom: '2px', left: '2px', background: 'rgba(0,0,0,0.7)', color: 'var(--gold)', fontSize: '0.55rem', padding: '1px 4px' }}>COVER</span>}
+                              </div>
+                            ))}
+                          </div>
+                          <label style={{ fontSize: '0.8rem', color: 'var(--gray)', marginBottom: '0.4rem', display: 'block' }}>Add More Images</label>
+                          <input type="file" accept="image/*" multiple style={{ background: 'var(--dark2)', border: '1px solid rgba(201,168,76,0.2)', color: 'var(--gray)', padding: '0.5rem', width: '100%', fontSize: '0.82rem' }}
+                            onChange={async e => {
+                              const files = Array.from(e.target.files)
+                              const urls = []
+                              for (const file of files) {
+                                const url = await uploadGalleryImage(file)
+                                if (url) urls.push(url)
+                              }
+                              setEditGalleryItem(prev => ({ ...prev, images: [...(prev.images || []), ...urls] }))
+                            }}
+                          />
+                          {galleryUploading && <p style={{ color: 'var(--gold)', fontSize: '0.8rem', marginTop: '0.4rem' }}>Uploading...</p>}
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                        <button onClick={saveEditGalleryItem} style={{ flex: 1, padding: '0.9rem', background: 'var(--gold)', color: 'var(--black)', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', letterSpacing: '1px' }}>Save Changes</button>
+                        <button onClick={() => setEditGalleryItem(null)} style={{ flex: 1, padding: '0.9rem', background: 'transparent', color: 'var(--gray)', border: '1px solid var(--gray)', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Cancel</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ADD GALLERY ITEM */}
                 <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '2rem', marginBottom: '2rem' }}>
                   <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', color: 'var(--gold)', marginBottom: '1.5rem' }}>Add Gallery Item</h3>
                   {galleryMsg && <div style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{galleryMsg}</div>}
                   <form onSubmit={addGalleryItem}>
                     <div className="form-grid">
-                      <div className="form-group"><label>Title</label><input value={newGalleryItem.title} onChange={e => setNewGalleryItem({ ...newGalleryItem, title: e.target.value })} placeholder="e.g. Full Detail Transformation" /></div>
-                      <div className="form-group"><label>Service</label><input value={newGalleryItem.service} onChange={e => setNewGalleryItem({ ...newGalleryItem, service: e.target.value })} placeholder="e.g. Premium Detail" /></div>
-                      <div className="form-group full"><label>Caption</label><textarea value={newGalleryItem.caption} onChange={e => setNewGalleryItem({ ...newGalleryItem, caption: e.target.value })} placeholder="Optional description..." style={{ minHeight: '60px' }} /></div>
+                      <div className="form-group"><label>Title</label><input value={newGalleryItem.title} onChange={e => setNewGalleryItem({ ...newGalleryItem, title: e.target.value })} placeholder="e.g. Hilux Full Detail" /></div>
+                      <div className="form-group"><label>Service</label><input value={newGalleryItem.service} onChange={e => setNewGalleryItem({ ...newGalleryItem, service: e.target.value })} placeholder="e.g. Full Detail Package" /></div>
+                      <div className="form-group full"><label>Caption</label><textarea value={newGalleryItem.caption} onChange={e => setNewGalleryItem({ ...newGalleryItem, caption: e.target.value })} placeholder="Describe the job..." style={{ minHeight: '60px' }} /></div>
                       <div className="form-group full">
-                        <label>Before Image</label>
-                        <input value={newGalleryItem.before_url} onChange={e => setNewGalleryItem({ ...newGalleryItem, before_url: e.target.value })} placeholder="Paste URL or upload below" />
-                        <input type="file" accept="image/*" style={{ marginTop: '0.5rem', background: 'var(--dark2)', border: '1px solid rgba(201,168,76,0.2)', color: 'var(--gray)', padding: '0.5rem', width: '100%', fontSize: '0.82rem' }}
+                        <label>Upload Images <span style={{ color: 'var(--gray)', fontWeight: 300 }}>(select multiple — first image is the cover)</span></label>
+                        {newGalleryItem.images.length > 0 && (
+                          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.8rem' }}>
+                            {newGalleryItem.images.map((url, i) => (
+                              <div key={i} style={{ position: 'relative', width: '80px', height: '80px' }}>
+                                <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <button type="button" onClick={() => setNewGalleryItem(prev => ({ ...prev, images: prev.images.filter((_, j) => j !== i) }))} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(244,67,54,0.9)', color: '#fff', border: 'none', width: '18px', height: '18px', fontSize: '0.65rem', cursor: 'pointer', borderRadius: '50%' }}>✕</button>
+                                {i === 0 && <span style={{ position: 'absolute', bottom: '2px', left: '2px', background: 'rgba(0,0,0,0.7)', color: 'var(--gold)', fontSize: '0.55rem', padding: '1px 4px' }}>COVER</span>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <input type="file" accept="image/*" multiple style={{ background: 'var(--dark2)', border: '1px solid rgba(201,168,76,0.2)', color: 'var(--gray)', padding: '0.5rem', width: '100%', fontSize: '0.82rem' }}
                           onChange={async e => {
-                            const url = await uploadGalleryImage(e.target.files[0], 'before')
-                            if (url) setNewGalleryItem(prev => ({ ...prev, before_url: url }))
+                            const files = Array.from(e.target.files)
+                            const urls = []
+                            for (const file of files) {
+                              const url = await uploadGalleryImage(file)
+                              if (url) urls.push(url)
+                            }
+                            setNewGalleryItem(prev => ({ ...prev, images: [...prev.images, ...urls] }))
                           }}
                         />
-                      </div>
-                      <div className="form-group full">
-                        <label>After Image</label>
-                        <input value={newGalleryItem.after_url} onChange={e => setNewGalleryItem({ ...newGalleryItem, after_url: e.target.value })} placeholder="Paste URL or upload below" />
-                        <input type="file" accept="image/*" style={{ marginTop: '0.5rem', background: 'var(--dark2)', border: '1px solid rgba(201,168,76,0.2)', color: 'var(--gray)', padding: '0.5rem', width: '100%', fontSize: '0.82rem' }}
-                          onChange={async e => {
-                            const url = await uploadGalleryImage(e.target.files[0], 'after')
-                            if (url) setNewGalleryItem(prev => ({ ...prev, after_url: url }))
-                          }}
-                        />
+                        {galleryUploading && <p style={{ color: 'var(--gold)', fontSize: '0.8rem', marginTop: '0.4rem' }}>Uploading...</p>}
                       </div>
                       <div className="form-submit">
                         <button type="submit" disabled={galleryUploading} style={{ opacity: galleryUploading ? 0.6 : 1 }}>
@@ -1194,34 +1271,43 @@ export default function Admin({ user }) {
                     </div>
                   </form>
                 </div>
+
+                {/* GALLERY LIST */}
                 {gallery.length === 0 ? (
                   <p style={{ color: 'var(--gray)', textAlign: 'center', padding: '3rem' }}>No gallery items yet.</p>
                 ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
-                    {gallery.map(item => (
-                      <div key={item.id} style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', overflow: 'hidden' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
-                          {item.before_url && (
-                            <div style={{ position: 'relative' }}>
-                              <img src={item.before_url} alt="Before" style={{ width: '100%', height: '150px', objectFit: 'cover', display: 'block' }} />
-                              <span style={{ position: 'absolute', bottom: '0.5rem', left: '0.5rem', background: 'rgba(0,0,0,0.7)', color: 'var(--gray)', fontSize: '0.7rem', padding: '0.2rem 0.5rem', letterSpacing: '1px' }}>BEFORE</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
+                    {gallery.map(item => {
+                      const imgs = item.images?.length ? item.images : [item.before_url, item.after_url].filter(Boolean)
+                      return (
+                        <div key={item.id} style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', overflow: 'hidden' }}>
+                          {/* COVER IMAGE */}
+                          <div style={{ position: 'relative', paddingBottom: '60%', overflow: 'hidden', background: 'var(--dark2)' }}>
+                            {imgs[0] && <img src={imgs[0]} alt="cover" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}
+                            <span style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: 'rgba(0,0,0,0.7)', color: 'var(--gold)', fontSize: '0.7rem', padding: '0.2rem 0.6rem' }}>📷 {imgs.length} photo{imgs.length !== 1 ? 's' : ''}</span>
+                          </div>
+                          {/* THUMBNAIL STRIP */}
+                          {imgs.length > 1 && (
+                            <div style={{ display: 'flex', gap: '2px', height: '50px' }}>
+                              {imgs.slice(0, 5).map((url, i) => (
+                                <div key={i} style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+                                  <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                  {i === 4 && imgs.length > 5 && <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--white)', fontSize: '0.75rem' }}>+{imgs.length - 5}</div>}
+                                </div>
+                              ))}
                             </div>
                           )}
-                          {item.after_url && (
-                            <div style={{ position: 'relative' }}>
-                              <img src={item.after_url} alt="After" style={{ width: '100%', height: '150px', objectFit: 'cover', display: 'block' }} />
-                              <span style={{ position: 'absolute', bottom: '0.5rem', left: '0.5rem', background: 'rgba(201,168,76,0.8)', color: 'var(--black)', fontSize: '0.7rem', padding: '0.2rem 0.5rem', letterSpacing: '1px' }}>AFTER</span>
+                          <div style={{ padding: '1rem 1.2rem' }}>
+                            <p style={{ color: 'var(--white)', fontWeight: '500', marginBottom: '0.2rem' }}>{item.title || 'Detail Job'}</p>
+                            {item.service && <p style={{ color: 'var(--gold)', fontSize: '0.8rem' }}>{item.service}</p>}
+                            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.8rem' }}>
+                              <button onClick={() => setEditGalleryItem({ ...item, images: imgs })} style={{ flex: 1, background: 'rgba(201,168,76,0.1)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>✏️ Edit</button>
+                              <button onClick={() => deleteGalleryItem(item.id)} style={{ flex: 1, background: 'rgba(244,67,54,0.1)', color: '#f44336', border: '1px solid #f44336', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>🗑 Delete</button>
                             </div>
-                          )}
+                          </div>
                         </div>
-                        <div style={{ padding: '1rem 1.2rem' }}>
-                          <p style={{ color: 'var(--white)', fontWeight: '500', marginBottom: '0.2rem' }}>{item.title || 'Detail Job'}</p>
-                          {item.service && <p style={{ color: 'var(--gold)', fontSize: '0.8rem' }}>{item.service}</p>}
-                          {item.caption && <p style={{ color: 'var(--gray)', fontSize: '0.82rem', marginTop: '0.3rem' }}>{item.caption}</p>}
-                          <button onClick={() => deleteGalleryItem(item.id)} style={{ marginTop: '0.8rem', background: 'rgba(244,67,54,0.1)', color: '#f44336', border: '1px solid #f44336', padding: '0.4rem 1rem', fontSize: '0.75rem', cursor: 'pointer', width: '100%' }}>🗑 Delete</button>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 )}
               </div>
