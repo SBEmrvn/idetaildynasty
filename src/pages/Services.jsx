@@ -37,12 +37,11 @@ export default function Services() {
   return (
     <>
       {/* HERO */}
-      <section style={{
-        paddingTop: '8rem', paddingBottom: '4rem', textAlign: 'center',
-        background: 'linear-gradient(135deg, #0A0A0A 0%, #1a1200 50%, #0A0A0A 100%)',
+      <section className="page-hero" style={{
+        textAlign: 'center',
         position: 'relative', overflow: 'hidden'
       }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(31,96,79,0.064) 0%, transparent 70%)' }} />
         <div style={{ position: 'relative', zIndex: 1, padding: '0 2rem' }}>
           <p className="section-label">What We Offer</p>
           <h1 className="section-title">Our Services</h1>
@@ -59,11 +58,11 @@ export default function Services() {
 
           {/* FILTER PILLS */}
           {cats.length > 1 && (
-            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '50px', padding: '0.4rem', width: 'fit-content', margin: '0 auto 2.5rem' }}>
+            <div className="pill-tabs" style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.12)', borderRadius: '50px', padding: '0.4rem', width: 'fit-content', margin: '0 auto 2.5rem' }}>
               {cats.map(c => (
                 <button key={c} onClick={() => setFilter(c)} style={{
                   background: filter === c ? 'var(--gold)' : 'transparent',
-                  border: 'none', color: filter === c ? 'var(--black)' : 'var(--gray)',
+                  border: 'none', color: filter === c ? '#fff' : 'var(--gray)',
                   fontFamily: 'var(--font-body)', fontSize: '0.75rem',
                   letterSpacing: '1.5px', textTransform: 'uppercase',
                   cursor: 'pointer', padding: '0.5rem 1.1rem',
@@ -76,7 +75,7 @@ export default function Services() {
 
           <div className="services-grid">
             {filtered.map((s) => (
-              <div className="service-card" key={s.id} style={{ position: 'relative', border: s.badge ? '1px solid rgba(201,168,76,0.5)' : undefined }}>
+              <div className="service-card" key={s.id} style={{ position: 'relative', border: s.badge ? '1px solid rgba(31,96,79,0.4)' : undefined }}>
 
                 {/* BADGE */}
                 {s.badge && (
@@ -103,7 +102,7 @@ export default function Services() {
                         items.push({ title: lines[i], desc: lines[i + 1] || '' })
                       }
                       return items.map((item, i) => (
-                        <li key={i} style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                        <li key={i} style={{ padding: '0.5rem 0', borderBottom: '1px solid rgba(16,52,43,0.05)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <span style={{ color: 'var(--gold)', fontSize: '0.55rem', flexShrink: 0 }}>&#10022;</span>
                             <span style={{ color: 'var(--white)', fontSize: '0.82rem', fontWeight: '500' }}>{item.title}</span>
@@ -114,78 +113,32 @@ export default function Services() {
                     })()}
                   </ul>
                 ) : (
-                  <p style={{ color: 'rgba(201,168,76,0.3)', fontSize: '0.78rem', marginTop: '0.8rem', fontStyle: 'italic' }}>Activities coming soon</p>
+                  <p style={{ color: 'rgba(31,96,79,0.24)', fontSize: '0.78rem', marginTop: '0.8rem', fontStyle: 'italic' }}>Activities coming soon</p>
                 )}
 
                 {/* SPACER */}
                 <div style={{ flexGrow: 1 }} />
 
-                {/* PRICE TAG */}
-                <div style={{ textAlign: 'center', margin: '1.8rem 0 0', position: 'relative' }}>
-                  <div style={{
-                    width: '2px', height: '28px',
-                    background: 'repeating-linear-gradient(180deg, #a07830 0px, #c9a84c 3px, #a07830 6px)',
-                    margin: '0 auto', borderRadius: '1px',
-                  }} />
-                  <div style={{
-                    position: 'relative',
-                    width: 'clamp(180px, 40vw, 280px)',
-                    height: 'clamp(180px, 40vw, 280px)',
-                    margin: '0 auto',
-                    animation: 'tagSwing 3s ease-in-out infinite',
-                    transformOrigin: 'top center',
-                  }}>
-                    <svg viewBox="0 0 110 110" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
-                      <defs>
-                        <radialGradient id={`tg${s.id}`} cx="50%" cy="50%" r="50%">
-                          <stop offset="0%" stopColor="#2a1f00" />
-                          <stop offset="100%" stopColor="#1a1200" />
-                        </radialGradient>
-                      </defs>
-                      <path
-                        d="M55,4 L59,12 L68,8 L69,17 L78,16 L76,25 L85,27 L80,35 L88,40 L81,46 L87,53 L79,57 L82,65 L74,66 L74,75 L66,73 L63,82 L55,78 L47,82 L44,73 L36,75 L36,66 L28,65 L31,57 L23,53 L29,46 L22,40 L30,35 L25,27 L34,25 L32,16 L41,17 L42,8 L51,12 Z"
-                        fill={`url(#tg${s.id})`}
-                        stroke="#C9A84C"
-                        strokeWidth="1.5"
-                      />
-                      <circle cx="55" cy="14" r="3" fill="none" stroke="#C9A84C" strokeWidth="1.5" />
-                    </svg>
-                    <div style={{
-                      position: 'absolute', inset: 0,
-                      display: 'flex', flexDirection: 'column',
-                      alignItems: 'center', justifyContent: 'center',
-                      paddingBottom: '45px', gap: '4px',
-                    }}>
-                      <span style={{ color: '#E8C96D', fontSize: 'clamp(0.7rem, 1.5vw, 1.1rem)', letterSpacing: '3px', textTransform: 'uppercase', fontFamily: 'var(--font-body)', fontWeight: '500' }}>RWF</span>
-                      <span style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.4rem, 3.5vw, 3rem)', color: '#FFD966', fontWeight: '700', lineHeight: 1 }}>
-                        {Number(s.price).toLocaleString()}
-                      </span>
-                    </div>
+                {/* PRICE */}
+                <div style={{ marginTop: '1.4rem', background: 'linear-gradient(140deg, var(--mint-soft), var(--turquoise))', borderRadius: 'var(--r-md)', padding: '1rem 1.1rem', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <div>
+                    <span style={{ display: 'block', fontSize: '0.72rem', color: 'var(--muted)', marginBottom: '0.25rem' }}>Price</span>
+                    <span style={{ font: '700 1.6rem/1 var(--font-display)', letterSpacing: '-0.04em', color: 'var(--forest)' }}>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 600, marginRight: '0.3rem', letterSpacing: 0 }}>RWF</span>{Number(s.price).toLocaleString()}
+                    </span>
                   </div>
                   {s.suv_surcharge > 0 && (
-                    <p style={{ color: '#aaa', fontSize: '0.73rem', marginTop: '0.6rem' }}>
-                      SUV / 4x4 <span style={{ color: '#E8C96D' }}>+RWF {Number(s.suv_surcharge).toLocaleString()}</span>
-                    </p>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--forest-3)', background: '#fff', padding: '0.35rem 0.6rem', borderRadius: '99px', fontWeight: 600 }}>
+                      SUV / 4x4 +{Number(s.suv_surcharge).toLocaleString()}
+                    </span>
                   )}
                 </div>
 
                 <div style={{ flexGrow: 1 }} />
 
                 {/* BOOK BUTTON */}
-                <Link to="/booking" style={{
-                  display: 'block', textAlign: 'center',
-                  marginTop: '1.5rem', padding: '0.65rem 1.5rem',
-                  background: 'transparent',
-                  border: '1px solid var(--gold)', color: 'var(--gold)',
-                  fontSize: '0.78rem', letterSpacing: '1.5px',
-                  textTransform: 'uppercase', textDecoration: 'none',
-                  borderRadius: '50px', transition: 'all 0.25s',
-                  fontFamily: 'var(--font-body)', fontWeight: '500'
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--gold)'; e.currentTarget.style.color = 'var(--black)' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--gold)' }}
-                >
-                  Book This
+                <Link to="/booking" className="btn-primary" style={{ marginTop: '1rem', width: '100%' }}>
+                  Book this service
                 </Link>
               </div>
             ))}
@@ -195,7 +148,7 @@ export default function Services() {
 
       {/* PRICE CALCULATOR */}
       {features.enable_price_calculator && (
-        <section style={{ background: 'var(--dark)', padding: '4rem 2rem', borderTop: '1px solid rgba(201,168,76,0.1)' }}>
+        <section style={{ background: 'var(--dark)', padding: '4rem 2rem', borderTop: '1px solid rgba(31,96,79,0.08)' }}>
           <div style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
             <p className="section-label">Estimate Your Cost</p>
             <h2 className="section-title" style={{ marginBottom: '2rem' }}>Price Calculator</h2>
@@ -217,7 +170,7 @@ export default function Services() {
               </div>
             </div>
             {calcService && (
-              <div style={{ marginTop: '2rem', background: 'var(--dark2)', border: '1px solid rgba(201,168,76,0.3)', padding: '2rem' }}>
+              <div style={{ marginTop: '2rem', background: 'var(--dark2)', border: '1px solid rgba(31,96,79,0.24)', padding: '2rem' }}>
                 <p style={{ color: 'var(--gray)', fontSize: '0.8rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Estimated Price</p>
                 <p style={{ fontFamily: 'var(--font-display)', fontSize: '3rem', color: 'var(--gold)' }}>
                   RWF {Math.round(parseFloat(calcService) * (calcSize === 'suv' ? 1.2 : calcSize === 'truck' ? 1.4 : 1)).toLocaleString()}

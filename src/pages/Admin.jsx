@@ -1,37 +1,38 @@
 ﻿import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../supabase'
+import { CalendarIcon, ClockIcon, CheckIcon, StarIcon, UserIcon, TrendIcon } from '../components/icons'
 import { useNavigate } from 'react-router-dom'
 
 function ReviewCard({ review: r, onDelete, onReply }) {
   const [reply, setReply] = useState(r.admin_reply || '')
   const [editing, setEditing] = useState(false)
   return (
-    <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '1.5rem' }}>
+    <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '1.5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.8rem' }}>
         <div>
           <p style={{ color: 'var(--white)', fontWeight: '500' }}>{r.customer_name || 'Anonymous'}</p>
           <p style={{ color: 'var(--gray)', fontSize: '0.8rem' }}>{r.service || ''} &nbsp;·&nbsp; {new Date(r.created_at).toLocaleDateString()}</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-          <span style={{ color: '#FF9800', fontSize: '1rem' }}>{'★'.repeat(r.rating || 0)}{'☆'.repeat(5 - (r.rating || 0))}</span>
-          <button onClick={() => onDelete(r.id)} style={{ background: 'rgba(244,67,54,0.15)', color: '#f44336', border: '1px solid #f44336', padding: '0.3rem 0.6rem', fontSize: '0.7rem', cursor: 'pointer' }}>🗑</button>
+          <span style={{ color: '#E8915A', fontSize: '1rem' }}>{'★'.repeat(r.rating || 0)}{'☆'.repeat(5 - (r.rating || 0))}</span>
+          <button onClick={() => onDelete(r.id)} style={{ background: 'rgba(217,96,79,0.15)', color: '#D9604F', border: '1px solid #D9604F', padding: '0.3rem 0.6rem', fontSize: '0.7rem', cursor: 'pointer' }}>🗑</button>
         </div>
       </div>
       <p style={{ color: 'var(--gray)', fontSize: '0.88rem', lineHeight: '1.6', marginBottom: '1rem' }}>{r.comment}</p>
       {r.admin_reply && !editing && (
-        <div style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', padding: '0.8rem 1rem', marginBottom: '0.8rem' }}>
+        <div style={{ background: 'rgba(31,96,79,0.064)', border: '1px solid rgba(31,96,79,0.16)', padding: '0.8rem 1rem', marginBottom: '0.8rem' }}>
           <p style={{ color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '1px', marginBottom: '0.3rem' }}>ADMIN REPLY</p>
           <p style={{ color: 'var(--gray)', fontSize: '0.85rem' }}>{r.admin_reply}</p>
         </div>
       )}
       {editing ? (
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <input value={reply} onChange={e => setReply(e.target.value)} placeholder="Write a reply..." style={{ flex: 1, background: 'var(--dark2)', border: '1px solid rgba(201,168,76,0.3)', color: 'var(--white)', padding: '0.6rem 0.8rem', fontFamily: 'var(--font-body)', fontSize: '0.85rem', outline: 'none' }} />
+          <input value={reply} onChange={e => setReply(e.target.value)} placeholder="Write a reply..." style={{ flex: 1, background: 'var(--dark2)', border: '1px solid rgba(31,96,79,0.24)', color: 'var(--white)', padding: '0.6rem 0.8rem', fontFamily: 'var(--font-body)', fontSize: '0.85rem', outline: 'none' }} />
           <button onClick={() => { onReply(r.id, reply); setEditing(false) }} style={{ background: 'var(--gold)', color: 'var(--black)', border: 'none', padding: '0.6rem 1rem', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'var(--font-body)' }}>Save</button>
           <button onClick={() => setEditing(false)} style={{ background: 'transparent', color: 'var(--gray)', border: '1px solid var(--gray)', padding: '0.6rem 1rem', cursor: 'pointer', fontSize: '0.8rem' }}>Cancel</button>
         </div>
       ) : (
-        <button onClick={() => setEditing(true)} style={{ background: 'rgba(201,168,76,0.1)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.4rem 1rem', fontSize: '0.75rem', cursor: 'pointer' }}>
+        <button onClick={() => setEditing(true)} style={{ background: 'rgba(31,96,79,0.08)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.4rem 1rem', fontSize: '0.75rem', cursor: 'pointer' }}>
           {r.admin_reply ? '✏️ Edit Reply' : '💬 Reply'}
         </button>
       )}
@@ -404,10 +405,10 @@ export default function Admin({ user }) {
 
   // HELPERS
   const statusColor = (status) => {
-    if (status === 'confirmed') return '#4CAF50'
-    if (status === 'completed') return '#2196F3'
-    if (status === 'cancelled') return '#f44336'
-    if (status === 'no-show') return '#FF9800'
+    if (status === 'confirmed') return '#2E9C6E'
+    if (status === 'completed') return '#4C86B8'
+    if (status === 'cancelled') return '#D9604F'
+    if (status === 'no-show') return '#E8915A'
     return 'var(--gold)'
   }
 
@@ -437,7 +438,7 @@ export default function Admin({ user }) {
   const lowStockItems = inventory.filter(i => i.quantity <= (i.low_stock_alert || 5))
 
   const inputStyle = {
-    background: 'var(--dark2)', border: '1px solid rgba(201,168,76,0.2)',
+    background: 'var(--dark2)', border: '1px solid rgba(31,96,79,0.16)',
     color: 'var(--white)', padding: '0.7rem 1rem',
     fontFamily: 'var(--font-body)', fontSize: '0.85rem',
     outline: 'none', width: '100%'
@@ -452,7 +453,7 @@ export default function Admin({ user }) {
   })
 
   if (!user) return (
-    <div style={{ minHeight: '100vh', background: 'var(--black)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: 'calc(100vh - 90px)', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <p style={{ color: 'var(--gold)', letterSpacing: '3px' }}>LOADING...</p>
     </div>
   )
@@ -460,40 +461,45 @@ export default function Admin({ user }) {
   if (!isAdmin) return null
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--black)', paddingTop: '5rem' }}>
+    <div style={{ minHeight: '100vh', background: 'transparent', paddingTop: '0' }}>
 
       {/* HEADER */}
-      <div style={{ background: 'var(--dark)', borderBottom: '1px solid rgba(201,168,76,0.2)', padding: '2rem', textAlign: 'center' }}>
-        <p style={{ color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '4px', textTransform: 'uppercase' }}>Admin Panel</p>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', marginTop: '0.3rem' }}>iDetail Dynasty</h1>
-      </div>
+      <section className="banner" style={{ marginBottom: 16 }}>
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 16, flexWrap: 'wrap' }}>
+          <div>
+            <span className="banner-eyebrow">Admin panel</span>
+            <h1 style={{ fontSize: 'clamp(1.6rem, 3vw, 2.3rem)', lineHeight: 1.1 }}>Run the <span className="accent">Dynasty</span> workshop</h1>
+            <p style={{ fontSize: '0.9rem', marginTop: 8 }}>Bookings, customers, services and settings in one place.</p>
+          </div>
+          <span className="count-chip" style={{ background: 'rgba(191,231,212,0.14)', color: 'var(--mint)' }}>{bookings.filter(b => b.status === 'pending').length} pending</span>
+        </div>
+      </section>
 
       {/* STATS */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+      <div className="stat-row" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', marginBottom: 16 }}>
         {[
-          { label: 'Total Bookings', value: bookings.length, icon: '📅' },
-          { label: 'Pending', value: bookings.filter(b => b.status === 'pending').length, icon: '⏳' },
-          { label: 'Confirmed', value: bookings.filter(b => b.status === 'confirmed').length, icon: '✅' },
-          { label: 'Completed', value: bookings.filter(b => b.status === 'completed').length, icon: '🏆' },
-          { label: 'Customers', value: customers.length, icon: '👥' },
-          { label: 'Revenue', value: `RWF ${totalRevenue}`, icon: '💰' },
+          { label: 'Total Bookings', value: bookings.length, Icon: CalendarIcon, tone: '' },
+          { label: 'Pending', value: bookings.filter(b => b.status === 'pending').length, Icon: ClockIcon, tone: 'peach' },
+          { label: 'Confirmed', value: bookings.filter(b => b.status === 'confirmed').length, Icon: CheckIcon, tone: 'turq' },
+          { label: 'Completed', value: bookings.filter(b => b.status === 'completed').length, Icon: StarIcon, tone: 'cream' },
+          { label: 'Customers', value: customers.length, Icon: UserIcon, tone: '' },
+          { label: 'Revenue', value: `RWF ${totalRevenue}`, Icon: TrendIcon, tone: 'peach' },
         ].map((s, i) => (
-          <div key={i} style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '1.2rem', textAlign: 'center' }}>
-            <div style={{ fontSize: '1.8rem', marginBottom: '0.4rem' }}>{s.icon}</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: 'var(--gold)' }}>{s.value}</div>
-            <div style={{ color: 'var(--gray)', fontSize: '0.75rem', letterSpacing: '1px', textTransform: 'uppercase' }}>{s.label}</div>
+          <div key={i} className="card hover stat-card">
+            <div className="stat-top"><span className={`tile-icon ${s.tone}`}><s.Icon /></span>{s.label}</div>
+            <div className="stat-value" style={{ fontSize: typeof s.value === 'string' ? '1.5rem' : undefined }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* TABS */}
-      <div style={{ padding: '0 2rem', maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '2rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '50px', padding: '0.4rem' }}>
+      <div className="card" style={{ padding: '1.4rem' }}>
+        <div className="pill-tabs" style={{ display: 'flex', gap: '0.4rem', marginBottom: '1.6rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.12)', borderRadius: '50px', padding: '0.4rem' }}>
           {['bookings', 'customers', 'services', 'payments', 'promos', 'staff', 'inventory', 'gallery', 'reports', 'reviews', 'settings'].map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
               background: tab === t ? 'var(--gold)' : 'transparent',
               border: 'none',
-              color: tab === t ? 'var(--black)' : 'var(--gray)',
+              color: tab === t ? '#fff' : 'var(--gray)',
               fontFamily: 'var(--font-body)', fontSize: '0.75rem',
               letterSpacing: '1.5px', textTransform: 'uppercase',
               cursor: 'pointer', padding: '0.55rem 1.1rem',
@@ -542,7 +548,7 @@ export default function Admin({ user }) {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     zIndex: 1000, padding: '1rem'
                   }}>
-                    <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.3)', padding: '2rem', width: '100%', maxWidth: '550px', maxHeight: '90vh', overflowY: 'auto' }}>
+                    <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.24)', padding: '2rem', width: '100%', maxWidth: '550px', maxHeight: '90vh', overflowY: 'auto' }}>
                       <h3 style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Edit Booking</h3>
                       <div className="form-grid">
                         {[
@@ -617,7 +623,7 @@ export default function Admin({ user }) {
                   <div className="admin-table-wrap">
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                       <thead>
-                        <tr style={{ borderBottom: '1px solid rgba(201,168,76,0.3)' }}>
+                        <tr style={{ borderBottom: '1px solid rgba(31,96,79,0.24)' }}>
                           {['Name', 'Email', 'Service', 'Date', 'Time', 'Car', 'Status', 'Payment', 'Notes', 'Actions'].map(h => (
                             <th key={h} style={{ padding: '0.8rem', textAlign: 'left', color: 'var(--gold)', fontSize: '0.7rem', letterSpacing: '1.5px', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
                           ))}
@@ -625,7 +631,7 @@ export default function Admin({ user }) {
                       </thead>
                       <tbody>
                         {filteredBookings.map(b => (
-                          <tr key={b.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                          <tr key={b.id} style={{ borderBottom: '1px solid rgba(16,52,43,0.05)' }}>
                             <td style={{ padding: '0.8rem', color: 'var(--white)', whiteSpace: 'nowrap' }}>{b.name}</td>
                             <td style={{ padding: '0.8rem', color: 'var(--gray)', fontSize: '0.8rem' }}>{b.email}</td>
                             <td style={{ padding: '0.8rem', color: 'var(--white)', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.service}</td>
@@ -643,7 +649,7 @@ export default function Admin({ user }) {
                               </select>
                             </td>
                             <td style={{ padding: '0.8rem' }}>
-                              <span style={{ color: b.payment_status === 'paid' ? '#4CAF50' : b.payment_status === 'partial' ? '#FF9800' : 'var(--gray)', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                              <span style={{ color: b.payment_status === 'paid' ? '#2E9C6E' : b.payment_status === 'partial' ? '#E8915A' : 'var(--gray)', fontSize: '0.75rem', textTransform: 'uppercase' }}>
                                 {b.payment_status || 'unpaid'}
                               </span>
                             </td>
@@ -652,8 +658,8 @@ export default function Admin({ user }) {
                             </td>
                             <td style={{ padding: '0.8rem' }}>
                               <div style={{ display: 'flex', gap: '0.4rem' }}>
-                                <button onClick={() => setEditBooking(b)} style={{ background: 'rgba(201,168,76,0.15)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.3rem 0.5rem', fontSize: '0.7rem', cursor: 'pointer' }}>✏️</button>
-                                <button onClick={() => deleteBooking(b.id)} style={{ background: 'rgba(244,67,54,0.15)', color: '#f44336', border: '1px solid #f44336', padding: '0.3rem 0.5rem', fontSize: '0.7rem', cursor: 'pointer' }}>🗑</button>
+                                <button onClick={() => setEditBooking(b)} style={{ background: 'rgba(31,96,79,0.12)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.3rem 0.5rem', fontSize: '0.7rem', cursor: 'pointer' }}>✏️</button>
+                                <button onClick={() => deleteBooking(b.id)} style={{ background: 'rgba(217,96,79,0.15)', color: '#D9604F', border: '1px solid #D9604F', padding: '0.3rem 0.5rem', fontSize: '0.7rem', cursor: 'pointer' }}>🗑</button>
                               </div>
                             </td>
                           </tr>
@@ -671,7 +677,7 @@ export default function Admin({ user }) {
                 {selectedCustomer ? (
                   <div>
                     <button onClick={() => setSelectedCustomer(null)} style={{ ...btnStyle(), marginBottom: '1.5rem' }}>← Back to Customers</button>
-                    <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '2rem', marginBottom: '1.5rem' }}>
+                    <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '2rem', marginBottom: '1.5rem' }}>
                       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', color: 'var(--gold)', marginBottom: '0.5rem' }}>{selectedCustomer.name}</h3>
                       <p style={{ color: 'var(--gray)', marginBottom: '0.3rem' }}>📧 {selectedCustomer.email || '—'}</p>
                       <p style={{ color: 'var(--gray)', marginBottom: '0.3rem' }}>📞 {selectedCustomer.phone || 'No phone'}</p>
@@ -684,7 +690,7 @@ export default function Admin({ user }) {
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                         {customerBookings(selectedCustomer.email || '').map(b => (
-                          <div key={b.id} style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.1)', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                          <div key={b.id} style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.08)', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                             <div>
                               <p style={{ color: 'var(--white)', fontWeight: '500' }}>{b.service}</p>
                               <p style={{ color: 'var(--gray)', fontSize: '0.82rem' }}>{b.date} at {b.time} — {b.car_model || 'No car specified'}</p>
@@ -706,7 +712,7 @@ export default function Admin({ user }) {
                       <div style={{ overflowX: 'auto', marginBottom: '3rem' }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                           <thead>
-                            <tr style={{ borderBottom: '1px solid rgba(201,168,76,0.3)' }}>
+                            <tr style={{ borderBottom: '1px solid rgba(31,96,79,0.24)' }}>
                               {['Name', 'Email', 'Phone', 'Bookings', 'Joined', 'Actions'].map(h => (
                                 <th key={h} style={{ padding: '0.8rem 1rem', textAlign: 'left', color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '1.5px', textTransform: 'uppercase' }}>{h}</th>
                               ))}
@@ -714,14 +720,14 @@ export default function Admin({ user }) {
                           </thead>
                           <tbody>
                             {customers.map(c => (
-                              <tr key={c.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                              <tr key={c.id} style={{ borderBottom: '1px solid rgba(16,52,43,0.05)' }}>
                                 <td style={{ padding: '0.8rem 1rem', color: 'var(--white)' }}>{c.name}</td>
                                 <td style={{ padding: '0.8rem 1rem', color: 'var(--gray)' }}>{c.email || '—'}</td>
                                 <td style={{ padding: '0.8rem 1rem', color: 'var(--gray)' }}>{c.phone || '—'}</td>
                                 <td style={{ padding: '0.8rem 1rem', color: 'var(--gold)' }}>{customerBookings(c.email || '').length}</td>
                                 <td style={{ padding: '0.8rem 1rem', color: 'var(--gray)' }}>{new Date(c.created_at).toLocaleDateString()}</td>
                                 <td style={{ padding: '0.8rem 1rem' }}>
-                                  <button onClick={() => setSelectedCustomer(c)} style={{ background: 'rgba(201,168,76,0.15)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.3rem 0.8rem', fontSize: '0.75rem', cursor: 'pointer' }}>View History</button>
+                                  <button onClick={() => setSelectedCustomer(c)} style={{ background: 'rgba(31,96,79,0.12)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.3rem 0.8rem', fontSize: '0.75rem', cursor: 'pointer' }}>View History</button>
                                 </td>
                               </tr>
                             ))}
@@ -737,7 +743,7 @@ export default function Admin({ user }) {
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         {contactMessages.map(m => (
-                          <div key={m.id} style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', padding: '1.5rem' }}>
+                          <div key={m.id} style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.12)', padding: '1.5rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.8rem' }}>
                               <div>
                                 <p style={{ color: 'var(--white)', fontWeight: '500' }}>{m.name}</p>
@@ -748,11 +754,11 @@ export default function Admin({ user }) {
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
                                 <span style={{ color: 'var(--gray)', fontSize: '0.75rem' }}>{new Date(m.created_at).toLocaleDateString()}</span>
-                                <button onClick={() => deleteContactMessage(m.id)} style={{ background: 'rgba(244,67,54,0.15)', color: '#f44336', border: '1px solid #f44336', padding: '0.3rem 0.6rem', fontSize: '0.7rem', cursor: 'pointer' }}>🗑</button>
+                                <button onClick={() => deleteContactMessage(m.id)} style={{ background: 'rgba(217,96,79,0.15)', color: '#D9604F', border: '1px solid #D9604F', padding: '0.3rem 0.6rem', fontSize: '0.7rem', cursor: 'pointer' }}>🗑</button>
                               </div>
                             </div>
                             <p style={{ color: 'var(--gray)', fontSize: '0.88rem', lineHeight: '1.6', background: 'var(--dark2)', padding: '0.8rem 1rem' }}>{m.message}</p>
-                            <a href={`mailto:${m.email}?subject=Re: Your enquiry to iDetail Dynasty`} style={{ display: 'inline-block', marginTop: '0.8rem', background: 'rgba(201,168,76,0.1)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.4rem 1rem', fontSize: '0.75rem', textDecoration: 'none', letterSpacing: '1px' }}>Reply via Email</a>
+                            <a href={`mailto:${m.email}?subject=Re: Your enquiry to iDetail Dynasty`} style={{ display: 'inline-block', marginTop: '0.8rem', background: 'rgba(31,96,79,0.08)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.4rem 1rem', fontSize: '0.75rem', textDecoration: 'none', letterSpacing: '1px' }}>Reply via Email</a>
                           </div>
                         ))}
                       </div>
@@ -768,7 +774,7 @@ export default function Admin({ user }) {
                 {/* EDIT SERVICE MODAL */}
                 {editService && (
                   <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-                    <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.3)', padding: '2rem', width: '100%', maxWidth: '500px' }}>
+                    <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.24)', padding: '2rem', width: '100%', maxWidth: '500px' }}>
                       <h3 style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Edit Service</h3>
                       <div className="form-grid">
                         <div className="form-group full">
@@ -824,9 +830,9 @@ export default function Admin({ user }) {
                 )}
 
                 {/* ADD NEW SERVICE */}
-                <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '2rem', marginBottom: '2rem' }}>
+                <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '2rem', marginBottom: '2rem' }}>
                   <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', color: 'var(--gold)', marginBottom: '1.5rem' }}>Add New Service</h3>
-                  {serviceMsg && <div style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{serviceMsg}</div>}
+                  {serviceMsg && <div style={{ background: 'rgba(31,96,79,0.08)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{serviceMsg}</div>}
                   <form onSubmit={addService}>
                     <div className="form-grid">
                       <div className="form-group">
@@ -876,9 +882,9 @@ export default function Admin({ user }) {
                 {/* SERVICES LIST */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
                   {services.map(s => (
-                    <div key={s.id} style={{ background: 'var(--dark)', border: `1px solid ${s.active ? 'rgba(201,168,76,0.2)' : 'rgba(255,255,255,0.05)'}`, padding: '1.5rem', position: 'relative' }}>
+                    <div key={s.id} style={{ background: 'var(--dark)', border: `1px solid ${s.active ? 'rgba(31,96,79,0.16)' : 'rgba(16,52,43,0.05)'}`, padding: '1.5rem', position: 'relative' }}>
                       {!s.active && (
-                        <span style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(244,67,54,0.2)', color: '#f44336', fontSize: '0.7rem', padding: '0.2rem 0.5rem', letterSpacing: '1px' }}>INACTIVE</span>
+                        <span style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(217,96,79,0.2)', color: '#D9604F', fontSize: '0.7rem', padding: '0.2rem 0.5rem', letterSpacing: '1px' }}>INACTIVE</span>
                       )}
                       <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', color: s.active ? 'var(--white)' : 'var(--gray)', marginBottom: '0.5rem' }}>{s.name}</h4>
                       <p style={{ color: 'var(--gray)', fontSize: '0.82rem', marginBottom: '0.8rem' }}>{s.description}</p>
@@ -895,15 +901,15 @@ export default function Admin({ user }) {
                         </ul>
                       )}
                       {(!s.activities || !s.activities.trim()) && (
-                        <p style={{ color: 'rgba(201,168,76,0.4)', fontSize: '0.75rem', marginBottom: '0.8rem', fontStyle: 'italic' }}>No activities listed — click Edit to add</p>
+                        <p style={{ color: 'rgba(31,96,79,0.32)', fontSize: '0.75rem', marginBottom: '0.8rem', fontStyle: 'italic' }}>No activities listed — click Edit to add</p>
                       )}
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
                         <span style={{ color: 'var(--gold)', fontWeight: '500' }}>RWF {s.price}</span>
                         <span style={{ color: 'var(--gray)', fontSize: '0.8rem' }}>⏱ {s.duration}</span>
                       </div>
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button onClick={() => setEditService(s)} style={{ flex: 1, background: 'rgba(201,168,76,0.1)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>✏️ Edit</button>
-                        <button onClick={() => deleteService(s.id)} style={{ flex: 1, background: 'rgba(244,67,54,0.1)', color: '#f44336', border: '1px solid #f44336', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>🗑 Delete</button>
+                        <button onClick={() => setEditService(s)} style={{ flex: 1, background: 'rgba(31,96,79,0.08)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>✏️ Edit</button>
+                        <button onClick={() => deleteService(s.id)} style={{ flex: 1, background: 'rgba(217,96,79,0.1)', color: '#D9604F', border: '1px solid #D9604F', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>🗑 Delete</button>
                       </div>
                     </div>
                   ))}
@@ -917,8 +923,8 @@ export default function Admin({ user }) {
                 {/* REVENUE SUMMARY */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                   {[
-                    { label: 'Total Revenue', value: `RWF ${totalRevenue}`, color: '#4CAF50' },
-                    { label: 'Pending', value: `RWF ${pendingRevenue}`, color: '#FF9800' },
+                    { label: 'Total Revenue', value: `RWF ${totalRevenue}`, color: '#2E9C6E' },
+                    { label: 'Pending', value: `RWF ${pendingRevenue}`, color: '#E8915A' },
                     { label: 'Transactions', value: payments.length, color: 'var(--gold)' },
                   ].map((s, i) => (
                     <div key={i} style={{ background: 'var(--dark)', border: `1px solid ${s.color}30`, padding: '1.5rem', textAlign: 'center' }}>
@@ -929,9 +935,9 @@ export default function Admin({ user }) {
                 </div>
 
                 {/* ADD PAYMENT */}
-                <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '2rem', marginBottom: '2rem' }}>
+                <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '2rem', marginBottom: '2rem' }}>
                   <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', color: 'var(--gold)', marginBottom: '1.5rem' }}>Record Payment</h3>
-                  {paymentMsg && <div style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{paymentMsg}</div>}
+                  {paymentMsg && <div style={{ background: 'rgba(31,96,79,0.08)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{paymentMsg}</div>}
                   <form onSubmit={addPayment}>
                     <div className="form-grid">
                       <div className="form-group">
@@ -986,7 +992,7 @@ export default function Admin({ user }) {
                   <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                       <thead>
-                        <tr style={{ borderBottom: '1px solid rgba(201,168,76,0.3)' }}>
+                        <tr style={{ borderBottom: '1px solid rgba(31,96,79,0.24)' }}>
                           {['Customer', 'Email', 'Amount', 'Method', 'Status', 'Date', 'Actions'].map(h => (
                             <th key={h} style={{ padding: '0.8rem 1rem', textAlign: 'left', color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '1.5px', textTransform: 'uppercase' }}>{h}</th>
                           ))}
@@ -994,14 +1000,14 @@ export default function Admin({ user }) {
                       </thead>
                       <tbody>
                         {payments.map(p => (
-                          <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                          <tr key={p.id} style={{ borderBottom: '1px solid rgba(16,52,43,0.05)' }}>
                             <td style={{ padding: '0.8rem 1rem', color: 'var(--white)' }}>{p.customer_name}</td>
                             <td style={{ padding: '0.8rem 1rem', color: 'var(--gray)' }}>{p.customer_email || '—'}</td>
                             <td style={{ padding: '0.8rem 1rem', color: 'var(--gold)', fontWeight: '500' }}>RWF {p.amount}</td>
                             <td style={{ padding: '0.8rem 1rem', color: 'var(--gray)', textTransform: 'capitalize' }}>{p.method}</td>
                             <td style={{ padding: '0.8rem 1rem' }}>
                               <select value={p.status} onChange={e => updatePaymentStatus(p.id, e.target.value)}
-                                style={{ background: 'var(--dark2)', color: p.status === 'paid' ? '#4CAF50' : p.status === 'partial' ? '#FF9800' : 'var(--gray)', border: '1px solid rgba(201,168,76,0.2)', padding: '0.2rem 0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>
+                                style={{ background: 'var(--dark2)', color: p.status === 'paid' ? '#2E9C6E' : p.status === 'partial' ? '#E8915A' : 'var(--gray)', border: '1px solid rgba(31,96,79,0.16)', padding: '0.2rem 0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>
                                 <option value="paid">Paid</option>
                                 <option value="pending">Pending</option>
                                 <option value="partial">Partial</option>
@@ -1009,7 +1015,7 @@ export default function Admin({ user }) {
                             </td>
                             <td style={{ padding: '0.8rem 1rem', color: 'var(--gray)' }}>{new Date(p.created_at).toLocaleDateString()}</td>
                             <td style={{ padding: '0.8rem 1rem' }}>
-                              <button onClick={() => deletePayment(p.id)} style={{ background: 'rgba(244,67,54,0.15)', color: '#f44336', border: '1px solid #f44336', padding: '0.3rem 0.6rem', fontSize: '0.7rem', cursor: 'pointer' }}>🗑</button>
+                              <button onClick={() => deletePayment(p.id)} style={{ background: 'rgba(217,96,79,0.15)', color: '#D9604F', border: '1px solid #D9604F', padding: '0.3rem 0.6rem', fontSize: '0.7rem', cursor: 'pointer' }}>🗑</button>
                             </td>
                           </tr>
                         ))}
@@ -1023,9 +1029,9 @@ export default function Admin({ user }) {
             {/* =================== PROMOS TAB =================== */}
             {tab === 'promos' && (
               <div>
-                <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '2rem', marginBottom: '2rem' }}>
+                <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '2rem', marginBottom: '2rem' }}>
                   <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', color: 'var(--gold)', marginBottom: '1.5rem' }}>Add New Promo</h3>
-                  {promoMsg && <div style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{promoMsg}</div>}
+                  {promoMsg && <div style={{ background: 'rgba(31,96,79,0.08)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{promoMsg}</div>}
                   <form onSubmit={addPromo}>
                     <div className="form-grid">
                       <div className="form-group"><label>Tag</label><input value={newPromo.tag} onChange={e => setNewPromo({ ...newPromo, tag: e.target.value })} placeholder="Limited Time" /></div>
@@ -1045,11 +1051,11 @@ export default function Admin({ user }) {
                       <span className="promo-tag">{p.tag}</span>
                       <h3 className="promo-title">{p.title}</h3>
                       <p className="promo-desc">{p.description}</p>
-                      <div style={{ background: 'rgba(201,168,76,0.08)', border: '1px dashed rgba(201,168,76,0.4)', padding: '0.6rem 1rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between' }}>
+                      <div style={{ background: 'rgba(31,96,79,0.064)', border: '1px dashed rgba(31,96,79,0.32)', padding: '0.6rem 1rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between' }}>
                         <span style={{ color: 'var(--gold)', letterSpacing: '2px', fontSize: '0.9rem' }}>{p.code}</span>
                       </div>
                       <p className="promo-expiry">⏳ {p.expiry}</p>
-                      <button onClick={() => deletePromo(p.id)} style={{ marginTop: '1rem', background: 'rgba(244,67,54,0.1)', color: '#f44336', border: '1px solid #f44336', padding: '0.4rem 1rem', fontSize: '0.75rem', cursor: 'pointer' }}>Delete</button>
+                      <button onClick={() => deletePromo(p.id)} style={{ marginTop: '1rem', background: 'rgba(217,96,79,0.1)', color: '#D9604F', border: '1px solid #D9604F', padding: '0.4rem 1rem', fontSize: '0.75rem', cursor: 'pointer' }}>Delete</button>
                     </div>
                   ))}
                 </div>
@@ -1058,9 +1064,9 @@ export default function Admin({ user }) {
             {/* =================== STAFF TAB =================== */}
             {tab === 'staff' && (
               <div>
-                <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '2rem', marginBottom: '2rem' }}>
+                <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '2rem', marginBottom: '2rem' }}>
                   <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', color: 'var(--gold)', marginBottom: '1.5rem' }}>Add Staff Member</h3>
-                  {staffMsg && <div style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{staffMsg}</div>}
+                  {staffMsg && <div style={{ background: 'rgba(31,96,79,0.08)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{staffMsg}</div>}
                   <form onSubmit={addStaff}>
                     <div className="form-grid">
                       <div className="form-group"><label>Full Name *</label><input value={newStaff.name} onChange={e => setNewStaff({ ...newStaff, name: e.target.value })} placeholder="e.g. John Doe" /></div>
@@ -1082,21 +1088,21 @@ export default function Admin({ user }) {
                   {staff.length === 0 ? (
                     <p style={{ color: 'var(--gray)' }}>No staff added yet.</p>
                   ) : staff.map(s => (
-                    <div key={s.id} style={{ background: 'var(--dark)', border: `1px solid ${s.active ? 'rgba(201,168,76,0.2)' : 'rgba(255,255,255,0.05)'}`, padding: '1.5rem', position: 'relative' }}>
-                      {!s.active && <span style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(244,67,54,0.2)', color: '#f44336', fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}>INACTIVE</span>}
+                    <div key={s.id} style={{ background: 'var(--dark)', border: `1px solid ${s.active ? 'rgba(31,96,79,0.16)' : 'rgba(16,52,43,0.05)'}`, padding: '1.5rem', position: 'relative' }}>
+                      {!s.active && <span style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(217,96,79,0.2)', color: '#D9604F', fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}>INACTIVE</span>}
                       <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👤</div>
                       <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', color: 'var(--white)', marginBottom: '0.3rem' }}>{s.name}</h4>
                       <p style={{ color: 'var(--gray)', fontSize: '0.82rem', marginBottom: '0.2rem' }}>{s.email}</p>
                       <p style={{ color: 'var(--gray)', fontSize: '0.82rem', marginBottom: '0.8rem' }}>{s.phone || '—'}</p>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                        <span style={{ background: 'rgba(201,168,76,0.15)', color: 'var(--gold)', padding: '0.2rem 0.6rem', fontSize: '0.72rem', letterSpacing: '1px', textTransform: 'uppercase' }}>{s.role}</span>
+                        <span style={{ background: 'rgba(31,96,79,0.12)', color: 'var(--gold)', padding: '0.2rem 0.6rem', fontSize: '0.72rem', letterSpacing: '1px', textTransform: 'uppercase' }}>{s.role}</span>
                         <span style={{ color: 'var(--gray)', fontSize: '0.8rem' }}>✅ {s.jobs_completed || 0} jobs</span>
                       </div>
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button onClick={() => toggleStaffActive(s.id, s.active)} style={{ flex: 1, background: s.active ? 'rgba(244,67,54,0.1)' : 'rgba(76,175,80,0.1)', color: s.active ? '#f44336' : '#4CAF50', border: `1px solid ${s.active ? '#f44336' : '#4CAF50'}`, padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>
+                        <button onClick={() => toggleStaffActive(s.id, s.active)} style={{ flex: 1, background: s.active ? 'rgba(217,96,79,0.1)' : 'rgba(46,156,110,0.1)', color: s.active ? '#D9604F' : '#2E9C6E', border: `1px solid ${s.active ? '#D9604F' : '#2E9C6E'}`, padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>
                           {s.active ? 'Deactivate' : 'Activate'}
                         </button>
-                        <button onClick={() => deleteStaff(s.id)} style={{ flex: 1, background: 'rgba(244,67,54,0.1)', color: '#f44336', border: '1px solid #f44336', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>🗑 Remove</button>
+                        <button onClick={() => deleteStaff(s.id)} style={{ flex: 1, background: 'rgba(217,96,79,0.1)', color: '#D9604F', border: '1px solid #D9604F', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>🗑 Remove</button>
                       </div>
                     </div>
                   ))}
@@ -1108,14 +1114,14 @@ export default function Admin({ user }) {
             {tab === 'inventory' && (
               <div>
                 {lowStockItems.length > 0 && (
-                  <div style={{ background: 'rgba(244,67,54,0.1)', border: '1px solid #f44336', padding: '1rem 1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                  <div style={{ background: 'rgba(217,96,79,0.1)', border: '1px solid #D9604F', padding: '1rem 1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
                     <span style={{ fontSize: '1.2rem' }}>⚠️</span>
-                    <span style={{ color: '#f44336', fontSize: '0.85rem' }}>{lowStockItems.length} item{lowStockItems.length > 1 ? 's' : ''} low on stock: {lowStockItems.map(i => i.name).join(', ')}</span>
+                    <span style={{ color: '#D9604F', fontSize: '0.85rem' }}>{lowStockItems.length} item{lowStockItems.length > 1 ? 's' : ''} low on stock: {lowStockItems.map(i => i.name).join(', ')}</span>
                   </div>
                 )}
                 {editInventory && (
                   <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-                    <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.3)', padding: '2rem', width: '100%', maxWidth: '480px' }}>
+                    <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.24)', padding: '2rem', width: '100%', maxWidth: '480px' }}>
                       <h3 style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Edit Item</h3>
                       <div className="form-grid">
                         <div className="form-group full"><label>Item Name</label><input value={editInventory.name} onChange={e => setEditInventory({ ...editInventory, name: e.target.value })} /></div>
@@ -1131,9 +1137,9 @@ export default function Admin({ user }) {
                     </div>
                   </div>
                 )}
-                <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '2rem', marginBottom: '2rem' }}>
+                <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '2rem', marginBottom: '2rem' }}>
                   <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', color: 'var(--gold)', marginBottom: '1.5rem' }}>Add Inventory Item</h3>
-                  {inventoryMsg && <div style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{inventoryMsg}</div>}
+                  {inventoryMsg && <div style={{ background: 'rgba(31,96,79,0.08)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{inventoryMsg}</div>}
                   <form onSubmit={addInventoryItem}>
                     <div className="form-grid">
                       <div className="form-group"><label>Item Name *</label><input value={newItem.name} onChange={e => setNewItem({ ...newItem, name: e.target.value })} placeholder="e.g. Car Shampoo" /></div>
@@ -1148,7 +1154,7 @@ export default function Admin({ user }) {
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                     <thead>
-                      <tr style={{ borderBottom: '1px solid rgba(201,168,76,0.3)' }}>
+                      <tr style={{ borderBottom: '1px solid rgba(31,96,79,0.24)' }}>
                         {['Item', 'Qty', 'Unit', 'Low Alert', 'Supplier', 'Status', 'Actions'].map(h => (
                           <th key={h} style={{ padding: '0.8rem 1rem', textAlign: 'left', color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '1.5px', textTransform: 'uppercase' }}>{h}</th>
                         ))}
@@ -1156,21 +1162,21 @@ export default function Admin({ user }) {
                     </thead>
                     <tbody>
                       {inventory.map(i => (
-                        <tr key={i.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                        <tr key={i.id} style={{ borderBottom: '1px solid rgba(16,52,43,0.05)' }}>
                           <td style={{ padding: '0.8rem 1rem', color: 'var(--white)' }}>{i.name}</td>
-                          <td style={{ padding: '0.8rem 1rem', color: i.quantity <= (i.low_stock_alert || 5) ? '#f44336' : 'var(--gold)', fontWeight: '500' }}>{i.quantity}</td>
+                          <td style={{ padding: '0.8rem 1rem', color: i.quantity <= (i.low_stock_alert || 5) ? '#D9604F' : 'var(--gold)', fontWeight: '500' }}>{i.quantity}</td>
                           <td style={{ padding: '0.8rem 1rem', color: 'var(--gray)' }}>{i.unit || '—'}</td>
                           <td style={{ padding: '0.8rem 1rem', color: 'var(--gray)' }}>{i.low_stock_alert || 5}</td>
                           <td style={{ padding: '0.8rem 1rem', color: 'var(--gray)' }}>{i.supplier || '—'}</td>
                           <td style={{ padding: '0.8rem 1rem' }}>
-                            <span style={{ color: i.quantity <= (i.low_stock_alert || 5) ? '#f44336' : '#4CAF50', fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                            <span style={{ color: i.quantity <= (i.low_stock_alert || 5) ? '#D9604F' : '#2E9C6E', fontSize: '0.75rem', textTransform: 'uppercase' }}>
                               {i.quantity <= (i.low_stock_alert || 5) ? '⚠ Low' : '✓ OK'}
                             </span>
                           </td>
                           <td style={{ padding: '0.8rem 1rem' }}>
                             <div style={{ display: 'flex', gap: '0.4rem' }}>
-                              <button onClick={() => setEditInventory(i)} style={{ background: 'rgba(201,168,76,0.15)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.3rem 0.5rem', fontSize: '0.7rem', cursor: 'pointer' }}>✏️</button>
-                              <button onClick={() => deleteInventoryItem(i.id)} style={{ background: 'rgba(244,67,54,0.15)', color: '#f44336', border: '1px solid #f44336', padding: '0.3rem 0.5rem', fontSize: '0.7rem', cursor: 'pointer' }}>🗑</button>
+                              <button onClick={() => setEditInventory(i)} style={{ background: 'rgba(31,96,79,0.12)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.3rem 0.5rem', fontSize: '0.7rem', cursor: 'pointer' }}>✏️</button>
+                              <button onClick={() => deleteInventoryItem(i.id)} style={{ background: 'rgba(217,96,79,0.15)', color: '#D9604F', border: '1px solid #D9604F', padding: '0.3rem 0.5rem', fontSize: '0.7rem', cursor: 'pointer' }}>🗑</button>
                             </div>
                           </td>
                         </tr>
@@ -1188,7 +1194,7 @@ export default function Admin({ user }) {
                 {/* EDIT GALLERY MODAL */}
                 {editGalleryItem && (
                   <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-                    <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.3)', padding: '2rem', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
+                    <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.24)', padding: '2rem', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
                       <h3 style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Edit Gallery Item</h3>
                       <div className="form-grid">
                         <div className="form-group"><label>Title</label><input value={editGalleryItem.title || ''} onChange={e => setEditGalleryItem({ ...editGalleryItem, title: e.target.value })} /></div>
@@ -1200,13 +1206,13 @@ export default function Admin({ user }) {
                             {(editGalleryItem.images || []).map((url, i) => (
                               <div key={i} style={{ position: 'relative', width: '80px', height: '80px' }}>
                                 <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                <button onClick={() => setEditGalleryItem(prev => ({ ...prev, images: prev.images.filter((_, j) => j !== i) }))} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(244,67,54,0.9)', color: '#fff', border: 'none', width: '18px', height: '18px', fontSize: '0.65rem', cursor: 'pointer', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+                                <button onClick={() => setEditGalleryItem(prev => ({ ...prev, images: prev.images.filter((_, j) => j !== i) }))} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(217,96,79,0.9)', color: '#fff', border: 'none', width: '18px', height: '18px', fontSize: '0.65rem', cursor: 'pointer', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
                                 {i === 0 && <span style={{ position: 'absolute', bottom: '2px', left: '2px', background: 'rgba(0,0,0,0.7)', color: 'var(--gold)', fontSize: '0.55rem', padding: '1px 4px' }}>COVER</span>}
                               </div>
                             ))}
                           </div>
                           <label style={{ fontSize: '0.8rem', color: 'var(--gray)', marginBottom: '0.4rem', display: 'block' }}>Add More Images</label>
-                          <input type="file" accept="image/*" multiple style={{ background: 'var(--dark2)', border: '1px solid rgba(201,168,76,0.2)', color: 'var(--gray)', padding: '0.5rem', width: '100%', fontSize: '0.82rem' }}
+                          <input type="file" accept="image/*" multiple style={{ background: 'var(--dark2)', border: '1px solid rgba(31,96,79,0.16)', color: 'var(--gray)', padding: '0.5rem', width: '100%', fontSize: '0.82rem' }}
                             onChange={async e => {
                               const files = Array.from(e.target.files)
                               const urls = []
@@ -1229,9 +1235,9 @@ export default function Admin({ user }) {
                 )}
 
                 {/* ADD GALLERY ITEM */}
-                <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '2rem', marginBottom: '2rem' }}>
+                <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '2rem', marginBottom: '2rem' }}>
                   <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', color: 'var(--gold)', marginBottom: '1.5rem' }}>Add Gallery Item</h3>
-                  {galleryMsg && <div style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{galleryMsg}</div>}
+                  {galleryMsg && <div style={{ background: 'rgba(31,96,79,0.08)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{galleryMsg}</div>}
                   <form onSubmit={addGalleryItem}>
                     <div className="form-grid">
                       <div className="form-group"><label>Title</label><input value={newGalleryItem.title} onChange={e => setNewGalleryItem({ ...newGalleryItem, title: e.target.value })} placeholder="e.g. Hilux Full Detail" /></div>
@@ -1244,13 +1250,13 @@ export default function Admin({ user }) {
                             {newGalleryItem.images.map((url, i) => (
                               <div key={i} style={{ position: 'relative', width: '80px', height: '80px' }}>
                                 <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                <button type="button" onClick={() => setNewGalleryItem(prev => ({ ...prev, images: prev.images.filter((_, j) => j !== i) }))} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(244,67,54,0.9)', color: '#fff', border: 'none', width: '18px', height: '18px', fontSize: '0.65rem', cursor: 'pointer', borderRadius: '50%' }}>✕</button>
+                                <button type="button" onClick={() => setNewGalleryItem(prev => ({ ...prev, images: prev.images.filter((_, j) => j !== i) }))} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(217,96,79,0.9)', color: '#fff', border: 'none', width: '18px', height: '18px', fontSize: '0.65rem', cursor: 'pointer', borderRadius: '50%' }}>✕</button>
                                 {i === 0 && <span style={{ position: 'absolute', bottom: '2px', left: '2px', background: 'rgba(0,0,0,0.7)', color: 'var(--gold)', fontSize: '0.55rem', padding: '1px 4px' }}>COVER</span>}
                               </div>
                             ))}
                           </div>
                         )}
-                        <input type="file" accept="image/*" multiple style={{ background: 'var(--dark2)', border: '1px solid rgba(201,168,76,0.2)', color: 'var(--gray)', padding: '0.5rem', width: '100%', fontSize: '0.82rem' }}
+                        <input type="file" accept="image/*" multiple style={{ background: 'var(--dark2)', border: '1px solid rgba(31,96,79,0.16)', color: 'var(--gray)', padding: '0.5rem', width: '100%', fontSize: '0.82rem' }}
                           onChange={async e => {
                             const files = Array.from(e.target.files)
                             const urls = []
@@ -1280,7 +1286,7 @@ export default function Admin({ user }) {
                     {gallery.map(item => {
                       const imgs = item.images?.length ? item.images : [item.before_url, item.after_url].filter(Boolean)
                       return (
-                        <div key={item.id} style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', overflow: 'hidden' }}>
+                        <div key={item.id} style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.12)', overflow: 'hidden' }}>
                           {/* COVER IMAGE */}
                           <div style={{ position: 'relative', paddingBottom: '60%', overflow: 'hidden', background: 'var(--dark2)' }}>
                             {imgs[0] && <img src={imgs[0]} alt="cover" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}
@@ -1301,8 +1307,8 @@ export default function Admin({ user }) {
                             <p style={{ color: 'var(--white)', fontWeight: '500', marginBottom: '0.2rem' }}>{item.title || 'Detail Job'}</p>
                             {item.service && <p style={{ color: 'var(--gold)', fontSize: '0.8rem' }}>{item.service}</p>}
                             <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.8rem' }}>
-                              <button onClick={() => setEditGalleryItem({ ...item, images: imgs })} style={{ flex: 1, background: 'rgba(201,168,76,0.1)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>✏️ Edit</button>
-                              <button onClick={() => deleteGalleryItem(item.id)} style={{ flex: 1, background: 'rgba(244,67,54,0.1)', color: '#f44336', border: '1px solid #f44336', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>🗑 Delete</button>
+                              <button onClick={() => setEditGalleryItem({ ...item, images: imgs })} style={{ flex: 1, background: 'rgba(31,96,79,0.08)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>✏️ Edit</button>
+                              <button onClick={() => deleteGalleryItem(item.id)} style={{ flex: 1, background: 'rgba(217,96,79,0.1)', color: '#D9604F', border: '1px solid #D9604F', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>🗑 Delete</button>
                             </div>
                           </div>
                         </div>
@@ -1319,12 +1325,12 @@ export default function Admin({ user }) {
                 {/* REVENUE OVERVIEW */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                   {[
-                    { label: 'Total Revenue', value: `RWF ${totalRevenue.toLocaleString()}`, color: '#4CAF50' },
-                    { label: 'Pending Revenue', value: `RWF ${pendingRevenue.toLocaleString()}`, color: '#FF9800' },
+                    { label: 'Total Revenue', value: `RWF ${totalRevenue.toLocaleString()}`, color: '#2E9C6E' },
+                    { label: 'Pending Revenue', value: `RWF ${pendingRevenue.toLocaleString()}`, color: '#E8915A' },
                     { label: 'Total Bookings', value: bookings.length, color: 'var(--gold)' },
-                    { label: 'Completed Jobs', value: bookings.filter(b => b.status === 'completed').length, color: '#2196F3' },
-                    { label: 'Cancellations', value: bookings.filter(b => b.status === 'cancelled').length, color: '#f44336' },
-                    { label: 'No Shows', value: bookings.filter(b => b.status === 'no-show').length, color: '#9E9E9E' },
+                    { label: 'Completed Jobs', value: bookings.filter(b => b.status === 'completed').length, color: '#4C86B8' },
+                    { label: 'Cancellations', value: bookings.filter(b => b.status === 'cancelled').length, color: '#D9604F' },
+                    { label: 'No Shows', value: bookings.filter(b => b.status === 'no-show').length, color: '#9AA6A0' },
                   ].map((s, i) => (
                     <div key={i} style={{ background: 'var(--dark)', border: `1px solid ${s.color}40`, padding: '1.5rem', textAlign: 'center' }}>
                       <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', color: s.color }}>{s.value}</div>
@@ -1335,7 +1341,7 @@ export default function Admin({ user }) {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
                   {/* TOP SERVICES */}
-                  <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '1.5rem' }}>
+                  <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '1.5rem' }}>
                     <h4 style={{ color: 'var(--gold)', letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '1.2rem' }}>🏆 Most Popular Services</h4>
                     {topServices.length === 0 ? <p style={{ color: 'var(--gray)', fontSize: '0.85rem' }}>No data yet.</p> : topServices.map((s, i) => (
                       <div key={i} style={{ marginBottom: '0.8rem' }}>
@@ -1351,22 +1357,22 @@ export default function Admin({ user }) {
                   </div>
 
                   {/* REVENUE BY MONTH */}
-                  <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '1.5rem' }}>
+                  <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '1.5rem' }}>
                     <h4 style={{ color: 'var(--gold)', letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '1.2rem' }}>📅 Revenue by Month</h4>
                     {Object.keys(revenueByMonth).length === 0 ? <p style={{ color: 'var(--gray)', fontSize: '0.85rem' }}>No payment data yet.</p> : Object.entries(revenueByMonth).map(([month, amount]) => (
-                      <div key={month} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <div key={month} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid rgba(16,52,43,0.05)' }}>
                         <span style={{ color: 'var(--gray)', fontSize: '0.85rem' }}>{month}</span>
-                        <span style={{ color: '#4CAF50', fontSize: '0.85rem', fontWeight: '500' }}>RWF {amount.toLocaleString()}</span>
+                        <span style={{ color: '#2E9C6E', fontSize: '0.85rem', fontWeight: '500' }}>RWF {amount.toLocaleString()}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* BOOKING STATUS BREAKDOWN */}
-                <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '1.5rem' }}>
+                <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '1.5rem' }}>
                   <h4 style={{ color: 'var(--gold)', letterSpacing: '2px', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '1.2rem' }}>📊 Booking Status Breakdown</h4>
                   <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                    {[['pending', 'var(--gold)'], ['confirmed', '#4CAF50'], ['completed', '#2196F3'], ['cancelled', '#f44336'], ['no-show', '#FF9800']].map(([status, color]) => {
+                    {[['pending', 'var(--gold)'], ['confirmed', '#2E9C6E'], ['completed', '#4C86B8'], ['cancelled', '#D9604F'], ['no-show', '#E8915A']].map(([status, color]) => {
                       const count = bookings.filter(b => b.status === status).length
                       const pct = bookings.length ? Math.round((count / bookings.length) * 100) : 0
                       return (
@@ -1389,10 +1395,10 @@ export default function Admin({ user }) {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                   {[
                     { label: 'Total Reviews', value: reviews.length, color: 'var(--gold)' },
-                    { label: 'Avg Rating', value: reviews.length ? (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length).toFixed(1) + ' ⭐' : '—', color: '#FF9800' },
-                    { label: '5 Star', value: reviews.filter(r => r.rating === 5).length, color: '#4CAF50' },
-                    { label: '1-2 Star', value: reviews.filter(r => r.rating <= 2).length, color: '#f44336' },
-                    { label: 'Unanswered', value: reviews.filter(r => !r.admin_reply).length, color: '#9E9E9E' },
+                    { label: 'Avg Rating', value: reviews.length ? (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length).toFixed(1) + ' ⭐' : '—', color: '#E8915A' },
+                    { label: '5 Star', value: reviews.filter(r => r.rating === 5).length, color: '#2E9C6E' },
+                    { label: '1-2 Star', value: reviews.filter(r => r.rating <= 2).length, color: '#D9604F' },
+                    { label: 'Unanswered', value: reviews.filter(r => !r.admin_reply).length, color: '#9AA6A0' },
                   ].map((s, i) => (
                     <div key={i} style={{ background: 'var(--dark)', border: `1px solid ${s.color}40`, padding: '1.2rem', textAlign: 'center' }}>
                       <div style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: s.color }}>{s.value}</div>
@@ -1417,7 +1423,7 @@ export default function Admin({ user }) {
                 <p className="section-label">Business Info</p>
                 <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', color: 'var(--white)', marginBottom: '0.5rem' }}>Contact Settings</h3>
                 <p style={{ color: 'var(--gray)', fontSize: '0.85rem', marginBottom: '2rem' }}>Changes here reflect immediately on the website — Contact page, WhatsApp button, and footer.</p>
-                {settingsMsg && <div style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1.5rem', fontSize: '0.85rem' }}>{settingsMsg}</div>}
+                {settingsMsg && <div style={{ background: 'rgba(31,96,79,0.08)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1.5rem', fontSize: '0.85rem' }}>{settingsMsg}</div>}
                 <form onSubmit={saveSettings}>
                   <div className="form-grid">
                     <div className="form-group">
@@ -1456,7 +1462,7 @@ export default function Admin({ user }) {
                         ].map(({ key, label, desc }) => (
                           <div key={key} onClick={() => setSettings({ ...settings, [key]: !settings[key] })} style={{
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                            background: 'var(--dark2)', border: `1px solid ${settings[key] ? 'rgba(201,168,76,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                            background: 'var(--dark2)', border: `1px solid ${settings[key] ? 'rgba(31,96,79,0.32)' : 'rgba(16,52,43,0.08)'}`,
                             padding: '0.9rem 1.2rem', cursor: 'pointer', transition: 'border-color 0.2s'
                           }}>
                             <div>
@@ -1466,14 +1472,14 @@ export default function Admin({ user }) {
                             <div style={{
                               width: '42px', height: '24px', borderRadius: '12px',
                               background: settings[key] ? 'var(--gold)' : 'var(--dark)',
-                              border: `1px solid ${settings[key] ? 'var(--gold)' : 'rgba(255,255,255,0.15)'}`,
+                              border: `1px solid ${settings[key] ? 'var(--gold)' : 'rgba(16,52,43,0.15)'}`,
                               position: 'relative', transition: 'background 0.2s', flexShrink: 0, marginLeft: '1rem'
                             }}>
                               <div style={{
                                 position: 'absolute', top: '3px',
                                 left: settings[key] ? '20px' : '3px',
                                 width: '16px', height: '16px', borderRadius: '50%',
-                                background: settings[key] ? 'var(--black)' : 'var(--gray)',
+                                background: settings[key] ? '#fff' : 'var(--gray)',
                                 transition: 'left 0.2s'
                               }} />
                             </div>

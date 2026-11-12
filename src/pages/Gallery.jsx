@@ -36,8 +36,8 @@ export default function Gallery() {
 
   return (
     <>
-      <section style={{ paddingTop: '8rem', paddingBottom: '4rem', textAlign: 'center', background: 'linear-gradient(135deg, #0A0A0A 0%, #1a1200 50%, #0A0A0A 100%)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%)' }} />
+      <section className="page-hero" style={{ textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(31,96,79,0.064) 0%, transparent 70%)' }} />
         <div style={{ position: 'relative', zIndex: 1, padding: '0 2rem' }}>
           <p className="section-label">Our Work</p>
           <h1 className="section-title">Before &amp; After</h1>
@@ -46,7 +46,7 @@ export default function Gallery() {
         </div>
       </section>
 
-      <section style={{ background: 'var(--black)', padding: '4rem 2rem' }}>
+      <section style={{ background: 'transparent', padding: '1rem 0 2rem' }}>
         {items.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '4rem' }}>
             <p style={{ color: 'var(--gray)', fontSize: '1rem' }}>Gallery coming soon -- check back after our first jobs!</p>
@@ -57,11 +57,11 @@ export default function Gallery() {
 
             {/* FILTER PILLS */}
             {serviceNames.length > 1 && (
-              <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '2.5rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '50px', padding: '0.4rem', width: 'fit-content' }}>
+              <div className="pill-tabs" style={{ display: 'flex', gap: '0.4rem', marginBottom: '2.5rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.12)', borderRadius: '50px', padding: '0.4rem', width: 'fit-content' }}>
                 {serviceNames.map(s => (
                   <button key={s} onClick={() => setFilter(s)} style={{
                     background: filter === s ? 'var(--gold)' : 'transparent',
-                    border: 'none', color: filter === s ? 'var(--black)' : 'var(--gray)',
+                    border: 'none', color: filter === s ? '#fff' : 'var(--gray)',
                     fontFamily: 'var(--font-body)', fontSize: '0.75rem',
                     letterSpacing: '1.5px', textTransform: 'uppercase',
                     cursor: 'pointer', padding: '0.5rem 1.1rem',
@@ -76,9 +76,9 @@ export default function Gallery() {
               {filtered.map(item => {
                 const imgs = item.images?.length ? item.images : [item.before_url, item.after_url].filter(Boolean)
                 return (
-                  <div key={item.id} onClick={() => setLightbox({ item, imgIndex: 0, imgs })} style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', overflow: 'hidden', cursor: 'pointer', transition: 'border-color 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(201,168,76,0.5)'}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(201,168,76,0.15)'}
+                  <div key={item.id} onClick={() => setLightbox({ item, imgIndex: 0, imgs })} style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.12)', overflow: 'hidden', cursor: 'pointer', transition: 'border-color 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(31,96,79,0.4)'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(31,96,79,0.12)'}
                   >
                     {/* COVER */}
                     <div style={{ position: 'relative', paddingBottom: '65%', overflow: 'hidden', background: 'var(--dark2)' }}>
@@ -114,7 +114,7 @@ export default function Gallery() {
               return (
                 <div onClick={() => setLightbox(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
                   {/* CLOSE */}
-                  <button onClick={() => setLightbox(null)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'transparent', border: '1px solid rgba(201,168,76,0.4)', color: 'var(--gold)', fontSize: '1.2rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>✕</button>
+                  <button onClick={() => setLightbox(null)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'transparent', border: '1px solid rgba(31,96,79,0.32)', color: 'var(--gold)', fontSize: '1.2rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>✕</button>
 
                   {/* COUNTER + TITLE */}
                   <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
@@ -129,9 +129,9 @@ export default function Gallery() {
                     {imgs.length > 1 && (
                       <>
                         <button onClick={e => { e.stopPropagation(); setLightbox(prev => ({ ...prev, imgIndex: (prev.imgIndex - 1 + imgs.length) % imgs.length })) }}
-                          style={{ position: 'absolute', left: '-3rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: '1px solid rgba(201,168,76,0.4)', color: 'var(--gold)', fontSize: '1.4rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>‹</button>
+                          style={{ position: 'absolute', left: '-3rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: '1px solid rgba(31,96,79,0.32)', color: 'var(--gold)', fontSize: '1.4rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>‹</button>
                         <button onClick={e => { e.stopPropagation(); setLightbox(prev => ({ ...prev, imgIndex: (prev.imgIndex + 1) % imgs.length })) }}
-                          style={{ position: 'absolute', right: '-3rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: '1px solid rgba(201,168,76,0.4)', color: 'var(--gold)', fontSize: '1.4rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>›</button>
+                          style={{ position: 'absolute', right: '-3rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: '1px solid rgba(31,96,79,0.32)', color: 'var(--gold)', fontSize: '1.4rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>›</button>
                       </>
                     )}
                   </div>
@@ -140,7 +140,7 @@ export default function Gallery() {
                   {imgs.length > 1 && (
                     <div onClick={e => e.stopPropagation()} style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '900px' }}>
                       {imgs.map((url, i) => (
-                        <div key={i} onClick={() => setLightbox(prev => ({ ...prev, imgIndex: i }))} style={{ width: '60px', height: '60px', border: `2px solid ${i === imgIndex ? 'var(--gold)' : 'rgba(255,255,255,0.1)'}`, overflow: 'hidden', cursor: 'pointer', flexShrink: 0, transition: 'border-color 0.2s' }}>
+                        <div key={i} onClick={() => setLightbox(prev => ({ ...prev, imgIndex: i }))} style={{ width: '60px', height: '60px', border: `2px solid ${i === imgIndex ? 'var(--gold)' : 'rgba(16,52,43,0.1)'}`, overflow: 'hidden', cursor: 'pointer', flexShrink: 0, transition: 'border-color 0.2s' }}>
                           <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         </div>
                       ))}

@@ -51,8 +51,8 @@ export default function Contact() {
   return (
     <>
       {/* HERO */}
-      <section style={{ paddingTop: '8rem', paddingBottom: '4rem', textAlign: 'center', background: 'linear-gradient(135deg, #0A0A0A 0%, #1a1200 50%, #0A0A0A 100%)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%)' }} />
+      <section className="page-hero" style={{ textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(31,96,79,0.064) 0%, transparent 70%)' }} />
         <div style={{ position: 'relative', zIndex: 1, padding: '0 2rem' }}>
           <p className="section-label">Get In Touch</p>
           <h1 className="section-title">Contact Us</h1>
@@ -60,7 +60,7 @@ export default function Contact() {
         </div>
       </section>
 
-      <section style={{ background: 'var(--black)', padding: '4rem 2rem' }}>
+      <section style={{ background: 'transparent', padding: '1rem 0 2rem' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gap: '3rem' }} className="contact-grid">
 
           {/* LEFT — CONTACT INFO */}
@@ -87,9 +87,9 @@ export default function Contact() {
             {/* PHONE */}
             <a
               href={`tel:${(info.phone || '').replace(/\s/g, '')}`}
-              style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '1.2rem 1.5rem', marginBottom: '1rem', textDecoration: 'none', transition: 'border-color 0.3s' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '1.2rem 1.5rem', marginBottom: '1rem', textDecoration: 'none', transition: 'border-color 0.3s' }}
               onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--gold)'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(201,168,76,0.2)'}
+              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(31,96,79,0.16)'}
             >
               <span style={{ fontSize: '1.8rem' }}>📞</span>
               <div>
@@ -102,9 +102,9 @@ export default function Contact() {
             {/* EMAIL */}
             <a
               href={`mailto:${info.email}`}
-              style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '1.2rem 1.5rem', marginBottom: '1rem', textDecoration: 'none', transition: 'border-color 0.3s' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '1.2rem 1.5rem', marginBottom: '1rem', textDecoration: 'none', transition: 'border-color 0.3s' }}
               onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--gold)'}
-              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(201,168,76,0.2)'}
+              onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(31,96,79,0.16)'}
             >
               <span style={{ fontSize: '1.8rem' }}>✉️</span>
               <div>
@@ -115,7 +115,7 @@ export default function Contact() {
             </a>
 
             {/* LOCATION */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '1.2rem 1.5rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '1.2rem 1.5rem', marginBottom: '1.5rem' }}>
               <span style={{ fontSize: '1.8rem' }}>📍</span>
               <div>
                 <p style={{ color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.2rem' }}>Location</p>
@@ -125,7 +125,7 @@ export default function Contact() {
             </div>
 
             {/* BUSINESS HOURS */}
-            <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '1.5rem' }}>
+            <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '1.5rem' }}>
               <p style={{ color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1rem' }}>Business Hours</p>
               {(info.business_hours
                 ? info.business_hours.split('\n').map(line => {
@@ -134,9 +134,9 @@ export default function Contact() {
                   })
                 : defaultHours
               ).map(([day, hours], i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid rgba(16,52,43,0.05)' }}>
                   <span style={{ color: 'var(--gray)', fontSize: '0.85rem' }}>{day}</span>
-                  <span style={{ color: hours === 'Closed' ? '#f44336' : 'var(--white)', fontSize: '0.85rem' }}>{hours}</span>
+                  <span style={{ color: hours === 'Closed' ? '#D9604F' : 'var(--white)', fontSize: '0.85rem' }}>{hours}</span>
                 </div>
               ))}
             </div>
@@ -147,7 +147,7 @@ export default function Contact() {
             <p className="section-label">Send a Message</p>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', marginBottom: '2rem' }}>Quick Enquiry</h2>
             {sent ? (
-              <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '3rem', textAlign: 'center' }}>
+              <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '3rem', textAlign: 'center' }}>
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
                 <p style={{ color: 'var(--gold)', fontSize: '1.1rem', marginBottom: '0.5rem' }}>Message Sent!</p>
                 <p style={{ color: 'var(--gray)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>We'll get back to you within 24 hours.</p>

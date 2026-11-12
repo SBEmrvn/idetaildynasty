@@ -86,7 +86,7 @@ export default function Login({ setUser }) {
             type="submit" disabled={loading}
             style={{
               width: '100%', padding: '1rem',
-              background: loading ? '#888' : 'var(--gold)',
+              background: loading ? '#A9B4AE' : 'var(--gold)',
               color: 'var(--black)', border: 'none',
               fontFamily: 'var(--font-body)', fontSize: '0.9rem',
               letterSpacing: '2px', textTransform: 'uppercase',

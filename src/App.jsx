@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef, lazy, Suspense, createContext, useContext } from 'react'
+import { useState, useEffect, lazy, Suspense, createContext, useContext } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, NavLink, Navigate, useLocation } from 'react-router-dom'
 import { supabase } from './supabase'
 import './index.css'
+import { Logo, HomeIcon, SparkleIcon, CalendarPlusIcon, ClipboardIcon, ImageIcon, TagIcon, StarIcon, PhoneIcon, SettingsIcon, LogInIcon, LogOutIcon, UserPlusIcon, WhatsAppIcon } from './components/icons'
+import { initials } from './components/ui'
 
 const Home = lazy(() => import('./pages/Home'))
 const Booking = lazy(() => import('./pages/Booking'))
@@ -39,75 +41,63 @@ function ScrollToTop() {
   return null
 }
 
-// ─── Navbar ──────────────────────────────────────────────────────────────────
-function Navbar({ user, setUser }) {
+// ─── Sidebar ─────────────────────────────────────────────────────────────────
+function SideLink({ to, tip, icon: Icon, end, onClick }) {
+  return (
+    <li>
+      <NavLink to={to} end={end} data-tip={tip} aria-label={tip} onClick={onClick}
+        className={({ isActive }) => `side-link${isActive ? ' active' : ''}`}>
+        <Icon />
+      </NavLink>
+    </li>
+  )
+}
+
+function Sidebar({ user, setUser }) {
   const features = useFeatures()
-  const [menuOpen, setMenuOpen] = useState(false)
-  const navRef = useRef(null)
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     setUser(null)
-    setMenuOpen(false)
   }
-
-  const close = () => setMenuOpen(false)
-
-  // Close menu on outside click
-  useEffect(() => {
-    const handler = (e) => {
-      if (menuOpen && navRef.current && !navRef.current.contains(e.target)) {
-        setMenuOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [menuOpen])
 
   const isAdmin = user?.email?.trim().toLowerCase() === import.meta.env.VITE_ADMIN_EMAIL?.trim().toLowerCase()
 
-  const navLinkClass = ({ isActive }) => isActive ? 'nav-link-active' : undefined
-
   return (
-    <nav ref={navRef}>
-      <Link to="/" className="nav-logo" onClick={close}>iDetail Dynasty</Link>
+    <aside className="sidebar" aria-label="Main navigation">
+      <Link to="/" className="sidebar-logo" aria-label="iDetail Dynasty home"><Logo /></Link>
 
-      <ul className={`nav-links${menuOpen ? ' nav-open' : ''}`}>
-        <li><NavLink to="/" end className={navLinkClass} onClick={close}>Home</NavLink></li>
-        <li><NavLink to="/services" className={navLinkClass} onClick={close}>Services</NavLink></li>
-        {features.enable_gallery && <li><NavLink to="/gallery" className={navLinkClass} onClick={close}>Gallery</NavLink></li>}
-        {features.enable_promos && <li><NavLink to="/promos" className={navLinkClass} onClick={close}>Promos</NavLink></li>}
-        {features.enable_reviews && <li><NavLink to="/reviews" className={navLinkClass} onClick={close}>Reviews</NavLink></li>}
-        <li><NavLink to="/contact" className={navLinkClass} onClick={close}>Contact</NavLink></li>
-        <li><NavLink to="/booking" className={navLinkClass} onClick={close}>Book Now</NavLink></li>
-        {user && features.enable_dashboard && <li><NavLink to="/dashboard" className={navLinkClass} onClick={close}>My Bookings</NavLink></li>}
-        <li className="nav-mobile-action">
-          {user
-            ? <button className="nav-btn" onClick={handleLogout}>Logout</button>
-            : <Link to="/register" className="nav-btn" onClick={close}>Register</Link>
-          }
-        </li>
+      <ul className="sidebar-nav">
+        <SideLink to="/" end tip="Home" icon={HomeIcon} />
+        <SideLink to="/services" tip="Services" icon={SparkleIcon} />
+        <SideLink to="/booking" tip="Book now" icon={CalendarPlusIcon} />
+        {user && features.enable_dashboard && <SideLink to="/dashboard" tip="My bookings" icon={ClipboardIcon} />}
+        {features.enable_gallery && <SideLink to="/gallery" tip="Gallery" icon={ImageIcon} />}
+        {features.enable_promos && <SideLink to="/promos" tip="Promos" icon={TagIcon} />}
+        {features.enable_reviews && <SideLink to="/reviews" tip="Reviews" icon={StarIcon} />}
+        <SideLink to="/contact" tip="Contact" icon={PhoneIcon} />
       </ul>
 
-      <div className="nav-right nav-desktop-action">
-        {user && <span style={{ color: 'var(--gold)', fontSize: '0.82rem', marginRight: '0.5rem' }}>👤 {user.name}</span>}
-        {isAdmin && <NavLink to="/admin" onClick={close} style={{ color: 'var(--gold)', fontSize: '0.78rem', letterSpacing: '1px', marginRight: '0.8rem', textDecoration: 'none' }}>⚙ Admin</NavLink>}
-        {!user && <NavLink to="/login" className={navLinkClass} onClick={close} style={{ marginRight: '0.5rem', fontSize: '0.78rem', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--gray)', textDecoration: 'none' }}>Login</NavLink>}
+      <ul className="sidebar-nav bottom">
+        {isAdmin && <SideLink to="/admin" tip="Admin" icon={SettingsIcon} />}
+        <li className="sidebar-sep" aria-hidden="true" />
         {user ? (
-          <button className="nav-btn-pill" onClick={handleLogout}>Logout</button>
+          <li>
+            <button className="side-link" data-tip="Log out" aria-label="Log out" onClick={handleLogout}><LogOutIcon /></button>
+          </li>
         ) : (
-          <Link to="/register" className="nav-btn-pill" onClick={close}>Register</Link>
+          <>
+            <SideLink to="/login" tip="Log in" icon={LogInIcon} />
+            <SideLink to="/register" tip="Register" icon={UserPlusIcon} />
+          </>
         )}
-      </div>
-
-      <button
-        className="nav-hamburger"
-        onClick={() => setMenuOpen(o => !o)}
-        aria-label="Toggle menu"
-      >
-        <span /><span /><span />
-      </button>
-    </nav>
+        {user && (
+          <li style={{ marginTop: 8 }}>
+            <div className="side-avatar" title={user.name}>{initials(user.name)}</div>
+          </li>
+        )}
+      </ul>
+    </aside>
   )
 }
 
@@ -123,7 +113,7 @@ function AnimatedRoutes({ user, setUser, features }) {
       const t = setTimeout(() => {
         setDisplayLocation(location)
         setStage('enter')
-      }, 700)
+      }, 200)
       return () => clearTimeout(t)
     }
   }, [location, displayLocation])
@@ -211,28 +201,24 @@ function App() {
     <FeaturesContext.Provider value={features}>
       <Router>
         <ScrollToTop />
-        <Navbar user={user} setUser={setUser} />
-        <AnimatedRoutes user={user} setUser={setUser} features={features} />
+        <div className="app-shell">
+          <Sidebar user={user} setUser={setUser} />
+          <main className="main">
+            <Link to="/" className="mobile-brand"><span className="mb-logo"><Logo /></span>iDetail Dynasty</Link>
+            <AnimatedRoutes user={user} setUser={setUser} features={features} />
+          </main>
+        </div>
 
         {/* WHATSAPP FLOAT BUTTON — controlled by feature flag */}
         {features.enable_whatsapp && whatsapp && (
           <a
+            className="wa-float"
             href={`https://wa.me/${whatsapp.replace(/\D/g, '')}?text=Hi%20iDetail%20Dynasty%2C%20I%27d%20like%20to%20book%20a%20detailing%20service.`}
             target="_blank" rel="noreferrer"
-            style={{
-              position: 'fixed', bottom: '2rem', right: '2rem',
-              background: '#25D366', color: '#fff',
-              width: '56px', height: '56px', borderRadius: '50%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.6rem', zIndex: 999,
-              boxShadow: '0 4px 20px rgba(37,211,102,0.4)',
-              textDecoration: 'none', transition: 'transform 0.2s'
-            }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
             title="Chat on WhatsApp"
+            aria-label="Chat on WhatsApp"
           >
-            💬
+            <WhatsAppIcon />
           </a>
         )}
       </Router>

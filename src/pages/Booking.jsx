@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { useFeatures } from '../App'
 import { getErrorMessage } from '../utils/errors'
@@ -11,13 +11,15 @@ const timeSlots = [
 
 export default function Booking({ user }) {
   const features = useFeatures()
+  const [searchParams] = useSearchParams()
+  const presetDate = /^\d{4}-\d{2}-\d{2}$/.test(searchParams.get('date') || '') ? searchParams.get('date') : ''
   const [services, setServices] = useState([])
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
     phone: '',
     service: '',
-    date: '',
+    date: presetDate,
     time: '',
     carModel: '',
     notes: ''
@@ -96,7 +98,7 @@ export default function Booking({ user }) {
 
   if (submitted) {
     return (
-      <section className="booking" style={{ minHeight: '100vh', paddingTop: '8rem' }}>
+      <section className="booking" style={{ minHeight: '100vh', paddingTop: '1rem' }}>
         <div className="booking-container" style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>✅</div>
           <p className="section-label">Booking Confirmed</p>
@@ -123,7 +125,7 @@ export default function Booking({ user }) {
   }
 
   return (
-    <section className="booking" style={{ minHeight: '100vh', paddingTop: '8rem' }}>
+    <section className="booking" style={{ minHeight: '100vh', paddingTop: '1rem' }}>
       <div className="booking-container">
         <div className="booking-header">
           <p className="section-label">Schedule a Visit</p>
@@ -197,7 +199,7 @@ export default function Booking({ user }) {
                 <label>Upload Car Photo (optional)</label>
                 <input
                   type="file" accept="image/*"
-                  style={{ background: 'var(--dark2)', border: '1px solid rgba(201,168,76,0.2)', color: 'var(--gray)', padding: '0.7rem 1rem', width: '100%', fontFamily: 'var(--font-body)', fontSize: '0.85rem' }}
+                  style={{ background: 'var(--dark2)', border: '1px solid rgba(31,96,79,0.16)', color: 'var(--gray)', padding: '0.7rem 1rem', width: '100%', fontFamily: 'var(--font-body)', fontSize: '0.85rem' }}
                   onChange={e => setForm({ ...form, photo: e.target.files[0] })}
                 />
                 <p style={{ color: 'var(--gray)', fontSize: '0.75rem', marginTop: '0.3rem' }}>Help us prepare by seeing your car's condition beforehand.</p>

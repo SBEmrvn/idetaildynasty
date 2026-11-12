@@ -37,8 +37,8 @@ export default function Promos() {
             <h3 className="promo-title">{p.title}</h3>
             <p className="promo-desc">{p.description}</p>
             <div style={{
-              background: 'rgba(201,168,76,0.08)',
-              border: '1px dashed rgba(201,168,76,0.4)',
+              background: 'rgba(31,96,79,0.064)',
+              border: '1px dashed rgba(31,96,79,0.32)',
               padding: '0.6rem 1rem',
               marginBottom: '1rem',
               display: 'flex',

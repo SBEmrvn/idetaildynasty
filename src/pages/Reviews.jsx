@@ -45,25 +45,25 @@ export default function Reviews({ user }) {
   return (
     <>
       {/* HERO */}
-      <section style={{ paddingTop: '8rem', paddingBottom: '4rem', textAlign: 'center', background: 'linear-gradient(135deg, #0A0A0A 0%, #1a1200 50%, #0A0A0A 100%)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%)' }} />
+      <section className="page-hero" style={{ textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(31,96,79,0.064) 0%, transparent 70%)' }} />
         <div style={{ position: 'relative', zIndex: 1, padding: '0 2rem' }}>
           <p className="section-label">What Clients Say</p>
           <h1 className="section-title">Reviews</h1>
           {avgRating && (
             <div style={{ marginTop: '1rem' }}>
-              <span style={{ color: '#FF9800', fontSize: '1.5rem' }}>{'★'.repeat(Math.round(avgRating))}{'☆'.repeat(5 - Math.round(avgRating))}</span>
+              <span style={{ color: '#E8915A', fontSize: '1.5rem' }}>{'★'.repeat(Math.round(avgRating))}{'☆'.repeat(5 - Math.round(avgRating))}</span>
               <p style={{ color: 'var(--gold)', fontSize: '1.1rem', marginTop: '0.3rem' }}>{avgRating} / 5 &nbsp;·&nbsp; {reviews.length} review{reviews.length !== 1 ? 's' : ''}</p>
             </div>
           )}
         </div>
       </section>
 
-      <section style={{ background: 'var(--black)', padding: '4rem 2rem' }}>
+      <section style={{ background: 'transparent', padding: '1rem 0 2rem' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
 
           {/* LEAVE A REVIEW */}
-          <div style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.2)', padding: '2rem', marginBottom: '3rem' }}>
+          <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '2rem', marginBottom: '3rem' }}>
             <p className="section-label">Share Your Experience</p>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', marginBottom: '1.5rem' }}>Leave a Review</h2>
             {submitted ? (
@@ -110,11 +110,11 @@ export default function Reviews({ user }) {
 
           {/* FILTER PILLS */}
           {reviews.length > 0 && (
-            <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '2rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '50px', padding: '0.4rem' }} className="pill-tabs">
+            <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '2rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.12)', borderRadius: '50px', padding: '0.4rem' }} className="pill-tabs">
               {[['all', `All (${reviews.length})`], ['5', `5★ (${reviews.filter(r=>r.rating===5).length})`], ['4', `4★ (${reviews.filter(r=>r.rating===4).length})`], ['3', `3★ (${reviews.filter(r=>r.rating===3).length})`], ['2', `2★ (${reviews.filter(r=>r.rating<=2).length})`]].map(([key, label]) => (
                 <button key={key} onClick={() => setFilter(key)} style={{
                   background: filter === key ? 'var(--gold)' : 'transparent',
-                  border: 'none', color: filter === key ? 'var(--black)' : 'var(--gray)',
+                  border: 'none', color: filter === key ? '#fff' : 'var(--gray)',
                   fontFamily: 'var(--font-body)', fontSize: '0.75rem',
                   letterSpacing: '1.5px', textTransform: 'uppercase',
                   cursor: 'pointer', padding: '0.5rem 1.1rem',
@@ -133,20 +133,20 @@ export default function Reviews({ user }) {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
               {filteredReviews.map(r => (
-                <div key={r.id} style={{ background: 'var(--dark)', border: '1px solid rgba(201,168,76,0.15)', padding: '1.5rem' }}>
+                <div key={r.id} style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.12)', padding: '1.5rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.8rem' }}>
                     <div>
                       <p style={{ color: 'var(--white)', fontWeight: '500' }}>{r.customer_name || 'Anonymous'}</p>
                       {r.service && <p style={{ color: 'var(--gold)', fontSize: '0.8rem' }}>{r.service}</p>}
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <span style={{ color: '#FF9800' }}>{'★'.repeat(r.rating || 0)}{'☆'.repeat(5 - (r.rating || 0))}</span>
+                      <span style={{ color: '#E8915A' }}>{'★'.repeat(r.rating || 0)}{'☆'.repeat(5 - (r.rating || 0))}</span>
                       <p style={{ color: 'var(--gray)', fontSize: '0.75rem', marginTop: '0.2rem' }}>{new Date(r.created_at).toLocaleDateString()}</p>
                     </div>
                   </div>
                   <p style={{ color: 'var(--gray)', fontSize: '0.9rem', lineHeight: '1.6' }}>{r.comment}</p>
                   {r.admin_reply && (
-                    <div style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', padding: '0.8rem 1rem', marginTop: '1rem' }}>
+                    <div style={{ background: 'rgba(31,96,79,0.064)', border: '1px solid rgba(31,96,79,0.16)', padding: '0.8rem 1rem', marginTop: '1rem' }}>
                       <p style={{ color: 'var(--gold)', fontSize: '0.72rem', letterSpacing: '1px', marginBottom: '0.3rem' }}>REPLY FROM IDETAIL DYNASTY</p>
                       <p style={{ color: 'var(--gray)', fontSize: '0.85rem' }}>{r.admin_reply}</p>
                     </div>
@@ -158,7 +158,7 @@ export default function Reviews({ user }) {
         </div>
       </section>
 
-      <section style={{ background: 'var(--dark)', padding: '4rem 2rem', textAlign: 'center', borderTop: '1px solid rgba(201,168,76,0.15)' }}>
+      <section style={{ background: 'var(--dark)', padding: '4rem 2rem', textAlign: 'center', borderTop: '1px solid rgba(31,96,79,0.12)' }}>
         <p className="section-label">Ready?</p>
         <h2 className="section-title" style={{ marginBottom: '1.5rem' }}>Experience It Yourself</h2>
         <Link to="/booking" className="btn-primary">Book Now</Link>
