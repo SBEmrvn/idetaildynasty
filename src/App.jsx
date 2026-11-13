@@ -101,6 +101,37 @@ function Sidebar({ user, setUser }) {
   )
 }
 
+// ─── Top bar (account actions) ───────────────────────────────────────────────
+function Topbar({ user, setUser }) {
+  const isAdmin = user?.email?.trim().toLowerCase() === import.meta.env.VITE_ADMIN_EMAIL?.trim().toLowerCase()
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+  }
+  return (
+    <header className="topbar">
+      <Link to="/" className="mobile-brand"><span className="mb-logo"><Logo /></span>iDetail Dynasty</Link>
+      <div className="topbar-actions">
+        {user ? (
+          <>
+            {isAdmin && <Link to="/admin" className="btn-outline btn-sm"><SettingsIcon /> <span className="hide-sm">Admin</span></Link>}
+            <Link to="/dashboard" className="user-chip" title="My bookings">
+              <span className="user-chip-avatar">{initials(user.name)}</span>
+              <span className="hide-sm">{user.name}</span>
+            </Link>
+            <button className="btn-primary btn-sm" onClick={handleLogout}><LogOutIcon /> Log out</button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="btn-outline btn-sm"><LogInIcon /> Log in</Link>
+            <Link to="/register" className="btn-primary btn-sm"><UserPlusIcon /> Register</Link>
+          </>
+        )}
+      </div>
+    </header>
+  )
+}
+
 // ─── Animated Routes ─────────────────────────────────────────────────────────
 function AnimatedRoutes({ user, setUser, features }) {
   const location = useLocation()
@@ -204,7 +235,7 @@ function App() {
         <div className="app-shell">
           <Sidebar user={user} setUser={setUser} />
           <main className="main">
-            <Link to="/" className="mobile-brand"><span className="mb-logo"><Logo /></span>iDetail Dynasty</Link>
+            <Topbar user={user} setUser={setUser} />
             <AnimatedRoutes user={user} setUser={setUser} features={features} />
           </main>
         </div>

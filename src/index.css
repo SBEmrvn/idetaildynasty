@@ -171,6 +171,29 @@ img { max-width: 100%; }
 }
 .mobile-brand { display: none; }
 
+/* Top bar with account actions */
+.topbar {
+  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+  margin: -6px 0 16px;
+}
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+.btn-sm { padding: 0.55rem 1rem !important; font-size: 0.8rem !important; }
+.btn-sm svg { width: 15px !important; height: 15px !important; }
+.user-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 4px 12px 4px 4px; border-radius: 999px;
+  background: rgba(255,255,255,0.75); border: 1px solid var(--line);
+  color: var(--ink); text-decoration: none; font-size: 0.82rem; font-weight: 500;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.user-chip:hover { background: #fff; box-shadow: var(--shadow-sm); }
+.user-chip-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--peach); color: var(--forest);
+  font: 700 0.72rem/1 var(--font-display);
+}
+
 /* page transitions — soft fade/rise */
 .page-wrap { position: relative; }
 .page-transition { will-change: opacity, transform; }
@@ -770,8 +793,10 @@ footer p { color: var(--muted); font-size: 0.8rem; line-height: 1.7; }
   .side-link.active::before { right: auto; top: auto; bottom: -11px; left: 50%; margin: 0 0 0 -7px; width: 14px; height: 4px; border-radius: 4px 4px 0 0; background: var(--mint); }
 
   .main { margin-left: 0; padding: 16px; border-radius: 24px; min-height: calc(100vh - 112px); }
+  .topbar { justify-content: space-between; margin: 0 0 14px; }
+  .hide-sm { display: none; }
   .mobile-brand {
-    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
     font: 700 1.05rem/1 var(--font-display); color: var(--forest); text-decoration: none; letter-spacing: -0.02em;
   }
   .mobile-brand .mb-logo { width: 34px; height: 34px; border-radius: 50%; background: var(--forest); color: #fff; display: grid; place-items: center; }
@@ -803,6 +828,9 @@ footer p { color: var(--muted); font-size: 0.8rem; line-height: 1.7; }
 }
 @media (max-width: 480px) {
   .main { padding: 12px; }
+  .topbar .btn-sm svg { display: none; }
+  .topbar .btn-sm { padding: 0.5rem 0.85rem !important; }
+  .mobile-brand { font-size: 0.95rem !important; }
   .stat-card { padding: 14px; }
   .stat-card .stat-top { font-size: 0.74rem; margin-bottom: 10px; }
   .gallery-ba { grid-template-columns: 1fr !important; }
