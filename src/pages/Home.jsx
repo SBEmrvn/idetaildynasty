@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useContent } from '../content'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { useFeatures } from '../App'
@@ -11,6 +12,7 @@ import {
 const SERVICE_ICONS = [CarIcon, DropIcon, ShieldIcon, SparkleIcon]
 
 export default function Home() {
+  const c = useContent()
   const features = useFeatures()
   const navigate = useNavigate()
   const [services, setServices] = useState([])
@@ -67,17 +69,17 @@ export default function Home() {
         <section className="banner" style={{ padding: undefined }}>
           <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ maxWidth: 520 }}>
-              <span className="banner-eyebrow"><SparkleIcon width={13} height={13} /> Premium car detailing</span>
+              <span className="banner-eyebrow"><SparkleIcon width={13} height={13} /> {c.home_eyebrow}</span>
               <h1 style={{ fontSize: 'clamp(1.7rem, 3.4vw, 2.5rem)', lineHeight: 1.1, marginBottom: 12 }}>
-                Your car deserves <span className="accent">Dynasty</span> treatment
+                {c.home_title} <span className="accent">{c.home_title_accent}</span> {c.home_title_end}
               </h1>
               <p style={{ fontSize: '0.92rem', lineHeight: 1.6 }}>
-                Professional detailing that restores, protects and transforms your vehicle. We don't just clean cars, we perfect them.
+                {c.home_subtitle}
               </p>
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <Link to="/booking" className="btn-peach"><CalendarPlusIcon /> Book appointment</Link>
-              {showPromos && <Link to="/promos" className="btn-ghost-light">View promos</Link>}
+              <Link to="/booking" className="btn-peach"><CalendarPlusIcon /> {c.home_cta_primary}</Link>
+              {showPromos && <Link to="/promos" className="btn-ghost-light">{c.home_cta_secondary}</Link>}
             </div>
           </div>
         </section>
@@ -228,8 +230,8 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer style={{ gridColumn: '1 / -1', marginTop: 0 }}>
-        <div className="footer-logo">iDetail Dynasty</div>
-        <p>Premium car detailing, done right every time. © {new Date().getFullYear()} iDetail Dynasty.</p>
+        <div className="footer-logo">{c.brand_name}</div>
+        <p>{c.footer_tagline} © {new Date().getFullYear()} {c.brand_name}.</p>
       </footer>
     </div>
   )

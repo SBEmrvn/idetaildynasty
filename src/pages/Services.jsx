@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useContent } from '../content'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { useFeatures } from '../App'
 
 export default function Services() {
+  const c = useContent()
   const features = useFeatures()
   const [services, setServices] = useState([])
   const [loading, setLoading] = useState(true)
@@ -47,12 +49,12 @@ export default function Services() {
       }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(31,96,79,0.064) 0%, transparent 70%)' }} />
         <div style={{ position: 'relative', zIndex: 1, padding: '0 2rem' }}>
-          <p className="section-label">What We Offer</p>
-          <h1 className="section-title">Our Services</h1>
+          <p className="section-label">{c.services_label}</p>
+          <h1 className="section-title">{c.services_title}</h1>
           <p className="section-sub" style={{ margin: '0 auto 2rem' }}>
-            Every service is performed by hand with premium products — because your car deserves nothing less.
+            {c.services_subtitle}
           </p>
-          <Link to="/booking" className="btn-primary">Book Any Service</Link>
+          <Link to="/booking" className="btn-primary">{c.services_cta}</Link>
         </div>
       </section>
 
@@ -202,11 +204,11 @@ export default function Services() {
 
       {/* FOOTER */}
       <footer>
-        <div className="footer-logo">iDetail Dynasty</div>
-        <p>Premium car detailing — done right, every time.<br />
+        <div className="footer-logo">{c.brand_name}</div>
+        <p>{c.footer_tagline}<br />
           {info.location} | {info.phone} | {info.email}
         </p>
-        <p style={{ marginTop: '1rem', fontSize: '0.75rem' }}>© 2026 iDetail Dynasty. All rights reserved.</p>
+        <p style={{ marginTop: '1rem', fontSize: '0.75rem' }}>© {new Date().getFullYear()} {c.brand_name}. All rights reserved.</p>
       </footer>
     </>
   )

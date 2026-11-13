@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useContent } from '../content'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
 
 export default function Register({ setUser }) {
+  const c = useContent()
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' })
   const [showPw, setShowPw] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -75,7 +77,7 @@ export default function Register({ setUser }) {
   return (
     <div className="auth-page">
       <div className="auth-box">
-        <div className="auth-logo">iDetail Dynasty</div>
+        <div className="auth-logo">{c.brand_name}</div>
         <p className="auth-sub">Create your account — it's free &amp; quick</p>
 
         {error && <div className="error-msg">{error}</div>}

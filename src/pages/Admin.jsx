@@ -3,6 +3,8 @@ import { supabase } from '../supabase'
 import { CalendarIcon, ClockIcon, CheckIcon, StarIcon, UserIcon, TrendIcon } from '../components/icons'
 import { useNavigate } from 'react-router-dom'
 import ServiceManager from '../components/admin/ServiceManager'
+import PromoManager from '../components/admin/PromoManager'
+import WebsiteEditor from '../components/admin/WebsiteEditor'
 
 function ReviewCard({ review: r, onDelete, onReply }) {
   const [reply, setReply] = useState(r.admin_reply || '')
@@ -55,9 +57,7 @@ export default function Admin({ user }) {
   const [filterDate, setFilterDate] = useState('')
   const [editBooking, setEditBooking] = useState(null)
   const [selectedCustomer, setSelectedCustomer] = useState(null)
-  const [newPromo, setNewPromo] = useState({ tag: '', title: '', description: '', code: '', expiry: '' })
   const [newPayment, setNewPayment] = useState({ booking_id: '', customer_name: '', customer_email: '', amount: '', method: 'cash', status: 'paid' })
-  const [promoMsg, setPromoMsg] = useState('')
   const [paymentMsg, setPaymentMsg] = useState('')
   const [staff, setStaff] = useState([])
   const [inventory, setInventory] = useState([])
@@ -169,24 +169,6 @@ export default function Admin({ user }) {
   const deletePayment = async (id) => {
     if (!window.confirm('Delete this payment?')) return
     await supabase.from('payments').delete().eq('id', id)
-    await fetchAll()
-  }
-
-  // PROMO ACTIONS
-  const addPromo = async (e) => {
-    e.preventDefault()
-    if (!newPromo.tag || !newPromo.title || !newPromo.description || !newPromo.code || !newPromo.expiry) {
-      setPromoMsg('Please fill in all fields.'); return
-    }
-    await supabase.from('promos').insert({ ...newPromo, active: true })
-    setPromoMsg('Promo added! ✅')
-    setNewPromo({ tag: '', title: '', description: '', code: '', expiry: '' })
-    await fetchAll()
-    setTimeout(() => setPromoMsg(''), 3000)
-  }
-
-  const deletePromo = async (id) => {
-    await supabase.from('promos').delete().eq('id', id)
     await fetchAll()
   }
 
@@ -334,8 +316,9 @@ export default function Admin({ user }) {
   // SETTINGS ACTIONS
   const saveSettings = async (e) => {
     e.preventDefault()
+    let res
     if (settings.id) {
-      await supabase.from('settings').update({
+      res = await supabase.from('settings').update({
         phone: settings.phone,
         whatsapp: settings.whatsapp,
         email: settings.email,
@@ -348,9 +331,9 @@ export default function Admin({ user }) {
         enable_photo_upload: settings.enable_photo_upload,
         enable_price_calculator: settings.enable_price_calculator,
         enable_dashboard: settings.enable_dashboard,
-      }).eq('id', settings.id)
+      }).eq('id', settings.id).select()
     } else {
-      await supabase.from('settings').insert({
+      res = await supabase.from('settings').insert({
         phone: settings.phone,
         whatsapp: settings.whatsapp,
         email: settings.email,
@@ -363,7 +346,12 @@ export default function Admin({ user }) {
         enable_photo_upload: settings.enable_photo_upload,
         enable_price_calculator: settings.enable_price_calculator,
         enable_dashboard: settings.enable_dashboard,
-      })
+      }).select()
+    }
+    if (res.error || !res.data?.length) {
+      setSettingsMsg('Not saved: Supabase refused the change. Make sure you are logged in as the admin and the admin migration has been run.')
+      setTimeout(() => setSettingsMsg(''), 7000)
+      return
     }
     setSettingsMsg('Settings saved! ✅')
     await fetchAll()
@@ -462,7 +450,7 @@ export default function Admin({ user }) {
       {/* TABS */}
       <div className="card" style={{ padding: '1.4rem' }}>
         <div className="pill-tabs" style={{ display: 'flex', gap: '0.4rem', marginBottom: '1.6rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.12)', borderRadius: '50px', padding: '0.4rem' }}>
-          {['bookings', 'customers', 'services', 'payments', 'promos', 'staff', 'inventory', 'gallery', 'reports', 'reviews', 'settings'].map(t => (
+          {['bookings', 'customers', 'services', 'website', 'payments', 'promos', 'staff', 'inventory', 'gallery', 'reports', 'reviews', 'settings'].map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
               background: tab === t ? 'var(--gold)' : 'transparent',
               border: 'none',
@@ -474,7 +462,7 @@ export default function Admin({ user }) {
               fontWeight: tab === t ? '500' : '300',
               transition: 'all 0.25s',
               whiteSpace: 'nowrap',
-            }}>{t === 'services' ? 'Services & pricing' : t}</button>
+            }}>{t === 'services' ? 'Services & pricing' : t === 'website' ? 'Website text' : t}</button>
           ))}
         </div>
 
@@ -848,40 +836,11 @@ export default function Admin({ user }) {
             )}
 
             {/* =================== PROMOS TAB =================== */}
-            {tab === 'promos' && (
-              <div>
-                <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '2rem', marginBottom: '2rem' }}>
-                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', color: 'var(--gold)', marginBottom: '1.5rem' }}>Add New Promo</h3>
-                  {promoMsg && <div style={{ background: 'rgba(31,96,79,0.08)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{promoMsg}</div>}
-                  <form onSubmit={addPromo}>
-                    <div className="form-grid">
-                      <div className="form-group"><label>Tag</label><input value={newPromo.tag} onChange={e => setNewPromo({ ...newPromo, tag: e.target.value })} placeholder="Limited Time" /></div>
-                      <div className="form-group"><label>Promo Code</label><input value={newPromo.code} onChange={e => setNewPromo({ ...newPromo, code: e.target.value })} placeholder="SAVE20" /></div>
-                      <div className="form-group full"><label>Title</label><input value={newPromo.title} onChange={e => setNewPromo({ ...newPromo, title: e.target.value })} placeholder="Grand Opening Special" /></div>
-                      <div className="form-group full"><label>Description</label><textarea value={newPromo.description} onChange={e => setNewPromo({ ...newPromo, description: e.target.value })} placeholder="Describe the promo..." /></div>
-                      <div className="form-group full"><label>Expiry</label><input value={newPromo.expiry} onChange={e => setNewPromo({ ...newPromo, expiry: e.target.value })} placeholder="e.g. Expires April 30, 2026" /></div>
-                      <div className="form-submit"><button type="submit">Add Promo</button></div>
-                    </div>
-                  </form>
-                </div>
-                <div className="promos-grid">
-                  {promos.length === 0 ? (
-                    <p style={{ color: 'var(--gray)' }}>No promos yet.</p>
-                  ) : promos.map(p => (
-                    <div className="promo-card" key={p.id}>
-                      <span className="promo-tag">{p.tag}</span>
-                      <h3 className="promo-title">{p.title}</h3>
-                      <p className="promo-desc">{p.description}</p>
-                      <div style={{ background: 'rgba(31,96,79,0.064)', border: '1px dashed rgba(31,96,79,0.32)', padding: '0.6rem 1rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: 'var(--gold)', letterSpacing: '2px', fontSize: '0.9rem' }}>{p.code}</span>
-                      </div>
-                      <p className="promo-expiry">⏳ {p.expiry}</p>
-                      <button onClick={() => deletePromo(p.id)} style={{ marginTop: '1rem', background: 'rgba(217,96,79,0.1)', color: '#D9604F', border: '1px solid #D9604F', padding: '0.4rem 1rem', fontSize: '0.75rem', cursor: 'pointer' }}>Delete</button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {tab === 'promos' && <PromoManager />}
+
+            {/* =================== WEBSITE CONTENT TAB =================== */}
+            {tab === 'website' && <WebsiteEditor />}
+
             {/* =================== STAFF TAB =================== */}
             {tab === 'staff' && (
               <div>

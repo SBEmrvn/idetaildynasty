@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import { useContent } from '../content'
 import { supabase } from '../supabase'
 
 export default function Promos() {
+  const c = useContent()
   const [promos, setPromos] = useState([])
 
   useEffect(() => {
@@ -21,10 +23,10 @@ export default function Promos() {
   return (
     <section className="promos">
       <div className="promos-header">
-        <p className="section-label">Deals & Offers</p>
-        <h2 className="section-title">Current Promotions</h2>
+        <p className="section-label">{c.promos_label}</p>
+        <h2 className="section-title">{c.promos_title}</h2>
         <p className="section-sub" style={{ margin: '0 auto' }}>
-          Exclusive deals for our valued customers. Show the code at booking to redeem.
+          {c.promos_subtitle}
         </p>
       </div>
 

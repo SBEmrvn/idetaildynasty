@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useContent } from '../content'
 import { Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { useFeatures } from '../App'
@@ -10,6 +11,7 @@ const timeSlots = [
 ]
 
 export default function Booking({ user }) {
+  const c = useContent()
   const features = useFeatures()
   const [searchParams] = useSearchParams()
   const presetDate = /^\d{4}-\d{2}-\d{2}$/.test(searchParams.get('date') || '') ? searchParams.get('date') : ''
@@ -105,7 +107,7 @@ export default function Booking({ user }) {
         <div className="booking-container" style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>✅</div>
           <p className="section-label">Booking Confirmed</p>
-          <h2 className="section-title">You're All Set!</h2>
+          <h2 className="section-title">{c.booking_done_title}</h2>
           <p style={{ color: 'var(--gray)', marginBottom: '0.8rem' }}>
             Thank you <strong style={{ color: 'var(--gold)' }}>{form.name}</strong>!
             Your appointment has been received.
@@ -131,10 +133,10 @@ export default function Booking({ user }) {
     <section className="booking" style={{ minHeight: '100vh', paddingTop: '1rem' }}>
       <div className="booking-container">
         <div className="booking-header">
-          <p className="section-label">Schedule a Visit</p>
-          <h2 className="section-title">Book Your Appointment</h2>
+          <p className="section-label">{c.booking_label}</p>
+          <h2 className="section-title">{c.booking_title}</h2>
           <p className="section-sub" style={{ margin: '0 auto' }}>
-            Choose your service, pick a time and we'll take care of the rest.
+            {c.booking_subtitle}
           </p>
           {!user && (
             <p style={{ color: 'var(--gray)', fontSize: '0.85rem', marginTop: '1rem' }}>

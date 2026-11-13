@@ -976,3 +976,38 @@ footer p { color: var(--muted); font-size: 0.8rem; line-height: 1.7; }
   .feature-actions { width: 100%; justify-content: flex-end; margin-top: 0; }
   .toast-stack { top: auto; bottom: 90px; right: 16px; left: 16px; max-width: none; }
 }
+
+/* ── Admin: Website content editor ─────────────────────────────────────────── */
+.content-sections { display: flex; flex-direction: column; gap: 12px; padding-bottom: 90px; }
+.content-section { padding: 0; overflow: hidden; }
+.content-section-head {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 16px 20px; background: none; border: none; cursor: pointer; text-align: left;
+  font-family: var(--font-body); color: var(--ink);
+}
+.content-section-head:hover { background: rgba(228,244,236,0.45); }
+.content-chevron { font-size: 1.1rem; color: var(--muted); transition: transform 0.25s var(--ease); line-height: 1; }
+.content-section.open .content-chevron { transform: rotate(180deg); }
+.content-section-body { padding: 4px 20px 20px; border-top: 1px solid var(--line); padding-top: 16px; animation: pageIn 0.3s var(--ease) both; }
+.link-btn {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font: 600 0.75rem/1.2 var(--font-body); color: var(--forest-3); text-decoration: none;
+}
+.link-btn:hover { text-decoration: underline; }
+.save-bar {
+  position: fixed; left: 50%; bottom: 24px; z-index: 900;
+  display: flex; align-items: center; gap: 18px;
+  padding: 10px 10px 10px 20px; border-radius: 999px;
+  background: var(--forest); color: #fff; font-size: 0.85rem; font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  transform: translate(-50%, 140%); opacity: 0; pointer-events: none;
+  transition: transform 0.35s var(--ease), opacity 0.25s;
+}
+.save-bar.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+.save-bar .btn-outline { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.25); }
+.save-bar .btn-primary { background: var(--mint); color: var(--forest); box-shadow: none; }
+.save-bar .btn-primary .spinner.light { border-color: rgba(16,52,43,0.2); border-top-color: var(--forest); }
+@media (max-width: 768px) {
+  .save-bar { left: 12px; right: 12px; bottom: 86px; transform: translateY(160%); border-radius: 20px; flex-wrap: wrap; justify-content: space-between; }
+  .save-bar.show { transform: none; }
+}

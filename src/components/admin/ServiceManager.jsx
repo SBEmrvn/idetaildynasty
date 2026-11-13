@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../supabase'
+import { Toggle, Spinner, useToasts, Modal, describeError, PERMISSION_HINT } from './kit'
 import {
   PlusIcon, ClockIcon, TagIcon, CheckIcon, XIcon, SparkleIcon, CarIcon, DropIcon, ShieldIcon, TrendIcon,
 } from '../icons'
@@ -39,82 +40,7 @@ const toForm = (s) => ({
   features: parseFeatures(s.activities || ''),
 })
 
-const PERMISSION_HINT = 'Supabase refused the change. Make sure you are logged in as the admin and that the services security migration has been applied.'
-
-const describeError = (error) => {
-  if (!error) return 'Something went wrong.'
-  if (error.code === '42501' || /row-level security|permission/i.test(error.message || '')) return PERMISSION_HINT
-  return error.message || 'Something went wrong.'
-}
-
 const ICONS = [CarIcon, DropIcon, ShieldIcon, SparkleIcon]
-
-/* ───────────────────────── small UI pieces ───────────────────────── */
-
-function Toggle({ checked, onChange, disabled, label }) {
-  return (
-    <button
-      type="button" role="switch" aria-checked={checked} aria-label={label}
-      className={`toggle${checked ? ' on' : ''}`} disabled={disabled}
-      onClick={() => onChange(!checked)}
-    >
-      <span className="toggle-knob" />
-    </button>
-  )
-}
-
-function Spinner({ light }) {
-  return <span className={`spinner${light ? ' light' : ''}`} aria-hidden="true" />
-}
-
-function useToasts() {
-  const [toasts, setToasts] = useState([])
-  const push = useCallback((type, text) => {
-    const id = Math.random().toString(36).slice(2)
-    setToasts(t => [...t, { id, type, text }])
-    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), type === 'error' ? 7000 : 3500)
-  }, [])
-  const dismiss = (id) => setToasts(t => t.filter(x => x.id !== id))
-  const view = (
-    <div className="toast-stack" role="status" aria-live="polite">
-      {toasts.map(t => (
-        <div key={t.id} className={`toast ${t.type}`}>
-          <span className="toast-icon">{t.type === 'error' ? <XIcon /> : <CheckIcon />}</span>
-          <span style={{ flex: 1 }}>{t.text}</span>
-          <button className="toast-x" onClick={() => dismiss(t.id)} aria-label="Dismiss"><XIcon /></button>
-        </div>
-      ))}
-    </div>
-  )
-  return { push, view }
-}
-
-function Modal({ title, subtitle, onClose, children, footer, width = 680 }) {
-  const ref = useRef(null)
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onClose() }
-    document.addEventListener('keydown', onKey)
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    ref.current?.querySelector('input, textarea, select, button')?.focus()
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev }
-  }, [onClose])
-  return (
-    <div className="modal-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <div className="modal" style={{ maxWidth: width }} role="dialog" aria-modal="true" aria-label={title} ref={ref}>
-        <div className="modal-head">
-          <div>
-            <h3>{title}</h3>
-            {subtitle && <p>{subtitle}</p>}
-          </div>
-          <button className="icon-btn" onClick={onClose} aria-label="Close"><XIcon /></button>
-        </div>
-        <div className="modal-body">{children}</div>
-        {footer && <div className="modal-foot">{footer}</div>}
-      </div>
-    </div>
-  )
-}
 
 /* ───────────────────────── editor modal ───────────────────────── */
 

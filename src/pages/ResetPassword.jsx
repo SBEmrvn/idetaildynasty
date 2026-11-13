@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useContent } from '../content'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { getErrorMessage } from '../utils/errors'
 
 export default function ResetPassword() {
+  const c = useContent()
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState('')
@@ -37,7 +39,7 @@ export default function ResetPassword() {
   return (
     <div className="auth-page">
       <div className="auth-box">
-        <div className="auth-logo">iDetail Dynasty</div>
+        <div className="auth-logo">{c.brand_name}</div>
         <p className="auth-sub">Set your new password</p>
 
         {error && <div className="error-msg">{error}</div>}

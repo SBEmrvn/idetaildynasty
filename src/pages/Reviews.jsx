@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useContent } from '../content'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabase'
 
 export default function Reviews({ user }) {
+  const c = useContent()
   const [reviews, setReviews] = useState([])
   const [form, setForm] = useState({ customer_name: user?.name || '', service: '', rating: 5, comment: '' })
   const [submitted, setSubmitted] = useState(false)
@@ -48,8 +50,8 @@ export default function Reviews({ user }) {
       <section className="page-hero" style={{ textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(31,96,79,0.064) 0%, transparent 70%)' }} />
         <div style={{ position: 'relative', zIndex: 1, padding: '0 2rem' }}>
-          <p className="section-label">What Clients Say</p>
-          <h1 className="section-title">Reviews</h1>
+          <p className="section-label">{c.reviews_label}</p>
+          <h1 className="section-title">{c.reviews_title}</h1>
           {avgRating && (
             <div style={{ marginTop: '1rem' }}>
               <span style={{ color: '#E8915A', fontSize: '1.5rem' }}>{'★'.repeat(Math.round(avgRating))}{'☆'.repeat(5 - Math.round(avgRating))}</span>
@@ -159,16 +161,16 @@ export default function Reviews({ user }) {
       </section>
 
       <section style={{ background: 'var(--dark)', padding: '4rem 2rem', textAlign: 'center', borderTop: '1px solid rgba(31,96,79,0.12)' }}>
-        <p className="section-label">Ready?</p>
-        <h2 className="section-title" style={{ marginBottom: '1.5rem' }}>Experience It Yourself</h2>
+        <p className="section-label">{c.reviews_cta_label}</p>
+        <h2 className="section-title" style={{ marginBottom: '1.5rem' }}>{c.reviews_cta_title}</h2>
         <Link to="/booking" className="btn-primary">Book Now</Link>
       </section>
 
       <footer>
-        <div className="footer-logo">iDetail Dynasty</div>
-        <p>Premium car detailing — done right, every time.<br />
+        <div className="footer-logo">{c.brand_name}</div>
+        <p>{c.footer_tagline}<br />
           📍 {info.location} &nbsp;|&nbsp; 📞 {info.phone} &nbsp;|&nbsp; ✉️ {info.email}</p>
-        <p style={{ marginTop: '1rem', fontSize: '0.75rem' }}>© 2026 iDetail Dynasty. All rights reserved.</p>
+        <p style={{ marginTop: '1rem', fontSize: '0.75rem' }}>© {new Date().getFullYear()} {c.brand_name}. All rights reserved.</p>
       </footer>
     </>
   )

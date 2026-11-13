@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useContent } from '../content'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabase'
 
 
 export default function Contact() {
+  const c = useContent()
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -54,9 +56,9 @@ export default function Contact() {
       <section className="page-hero" style={{ textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(31,96,79,0.064) 0%, transparent 70%)' }} />
         <div style={{ position: 'relative', zIndex: 1, padding: '0 2rem' }}>
-          <p className="section-label">Get In Touch</p>
-          <h1 className="section-title">Contact Us</h1>
-          <p className="section-sub" style={{ margin: '0 auto' }}>We're here to help. Reach out any way you prefer.</p>
+          <p className="section-label">{c.contact_label}</p>
+          <h1 className="section-title">{c.contact_title}</h1>
+          <p className="section-sub" style={{ margin: '0 auto' }}>{c.contact_subtitle}</p>
         </div>
       </section>
 
@@ -80,7 +82,7 @@ export default function Contact() {
               <div>
                 <p style={{ color: '#25D366', fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.2rem' }}>WhatsApp</p>
                 <p style={{ color: 'var(--white)', fontSize: '0.95rem' }}>{info.whatsapp || info.phone}</p>
-                <p style={{ color: 'var(--gray)', fontSize: '0.78rem' }}>Fastest response — tap to chat</p>
+                <p style={{ color: 'var(--gray)', fontSize: '0.78rem' }}>{c.contact_whatsapp_note}</p>
               </div>
             </a>
 
@@ -95,7 +97,7 @@ export default function Contact() {
               <div>
                 <p style={{ color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.2rem' }}>Call Us</p>
                 <p style={{ color: 'var(--white)', fontSize: '0.95rem' }}>{info.phone}</p>
-                <p style={{ color: 'var(--gray)', fontSize: '0.78rem' }}>Mon–Sat, 8am–6pm</p>
+                <p style={{ color: 'var(--gray)', fontSize: '0.78rem' }}>{c.contact_call_note}</p>
               </div>
             </a>
 
@@ -110,7 +112,7 @@ export default function Contact() {
               <div>
                 <p style={{ color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.2rem' }}>Email</p>
                 <p style={{ color: 'var(--white)', fontSize: '0.95rem' }}>{info.email}</p>
-                <p style={{ color: 'var(--gray)', fontSize: '0.78rem' }}>We reply within 24 hours</p>
+                <p style={{ color: 'var(--gray)', fontSize: '0.78rem' }}>{c.contact_email_note}</p>
               </div>
             </a>
 
@@ -120,7 +122,7 @@ export default function Contact() {
               <div>
                 <p style={{ color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '0.2rem' }}>Location</p>
                 <p style={{ color: 'var(--white)', fontSize: '0.95rem' }}>{info.location}</p>
-                <p style={{ color: 'var(--gray)', fontSize: '0.78rem' }}>Mobile detailing available too</p>
+                <p style={{ color: 'var(--gray)', fontSize: '0.78rem' }}>{c.contact_location_note}</p>
               </div>
             </div>
 
@@ -186,11 +188,11 @@ export default function Contact() {
       </section>
 
       <footer>
-        <div className="footer-logo">iDetail Dynasty</div>
-        <p>Premium car detailing — done right, every time.<br />
+        <div className="footer-logo">{c.brand_name}</div>
+        <p>{c.footer_tagline}<br />
           📍 {info.location} &nbsp;|&nbsp; 📞 {info.phone} &nbsp;|&nbsp; ✉️ {info.email}
         </p>
-        <p style={{ marginTop: '1rem', fontSize: '0.75rem' }}>© 2026 iDetail Dynasty. All rights reserved.</p>
+        <p style={{ marginTop: '1rem', fontSize: '0.75rem' }}>© {new Date().getFullYear()} {c.brand_name}. All rights reserved.</p>
       </footer>
     </>
   )

@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { useContent } from '../content'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabase'
 import { getErrorMessage } from '../utils/errors'
 
 export default function ForgotPassword() {
+  const c = useContent()
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
@@ -25,7 +27,7 @@ export default function ForgotPassword() {
   return (
     <div className="auth-page">
       <div className="auth-box">
-        <div className="auth-logo">iDetail Dynasty</div>
+        <div className="auth-logo">{c.brand_name}</div>
         <p className="auth-sub">Reset your password</p>
 
         {error && <div className="error-msg">{error}</div>}

@@ -4,6 +4,7 @@ import { supabase } from './supabase'
 import './index.css'
 import { Logo, HomeIcon, SparkleIcon, CalendarPlusIcon, ClipboardIcon, ImageIcon, TagIcon, StarIcon, PhoneIcon, SettingsIcon, LogInIcon, LogOutIcon, UserPlusIcon, WhatsAppIcon } from './components/icons'
 import { initials } from './components/ui'
+import { ContentContext, mergeContent, useContent } from './content'
 
 const Home = lazy(() => import('./pages/Home'))
 const Booking = lazy(() => import('./pages/Booking'))
@@ -103,6 +104,7 @@ function Sidebar({ user, setUser }) {
 
 // ─── Top bar (account actions) ───────────────────────────────────────────────
 function Topbar({ user, setUser }) {
+  const c = useContent()
   const isAdmin = user?.email?.trim().toLowerCase() === import.meta.env.VITE_ADMIN_EMAIL?.trim().toLowerCase()
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -110,7 +112,7 @@ function Topbar({ user, setUser }) {
   }
   return (
     <header className="topbar">
-      <Link to="/" className="mobile-brand"><span className="mb-logo"><Logo /></span>iDetail Dynasty</Link>
+      <Link to="/" className="mobile-brand"><span className="mb-logo"><Logo /></span>{c.brand_name}</Link>
       <div className="topbar-actions">
         {user ? (
           <>
@@ -180,6 +182,7 @@ function App() {
   const [user, setUser] = useState(null)
   const [whatsapp, setWhatsapp] = useState('')
   const [features, setFeatures] = useState(DEFAULT_FEATURES)
+  const [content, setContent] = useState(() => mergeContent(null))
 
   // Auth listener
   useEffect(() => {
@@ -211,6 +214,7 @@ function App() {
       const { data } = await supabase.from('settings').select('*').limit(1).single()
       if (!data) return
       if (data.whatsapp) setWhatsapp(data.whatsapp)
+      setContent(mergeContent(data.content))
       setFeatures({
         enable_reviews:          data.enable_reviews          ?? true,
         enable_gallery:          data.enable_gallery          ?? true,
@@ -230,6 +234,7 @@ function App() {
 
   return (
     <FeaturesContext.Provider value={features}>
+    <ContentContext.Provider value={content}>
       <Router>
         <ScrollToTop />
         <div className="app-shell">
@@ -253,6 +258,7 @@ function App() {
           </a>
         )}
       </Router>
+    </ContentContext.Provider>
     </FeaturesContext.Provider>
   )
 }

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useContent } from '../content'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabase'
 
 export default function Gallery() {
+  const c = useContent()
   const [items, setItems] = useState([])
   const [filter, setFilter] = useState('all')
   const [info, setInfo] = useState({ phone: '+000 000 0000', email: 'hello@idetaildynasty.com', location: 'Kigali, Rwanda' })
@@ -39,10 +41,10 @@ export default function Gallery() {
       <section className="page-hero" style={{ textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(31,96,79,0.064) 0%, transparent 70%)' }} />
         <div style={{ position: 'relative', zIndex: 1, padding: '0 2rem' }}>
-          <p className="section-label">Our Work</p>
-          <h1 className="section-title">Before &amp; After</h1>
-          <p className="section-sub" style={{ margin: '0 auto 2rem' }}>Real results from real cars. See the Dynasty difference.</p>
-          <Link to="/booking" className="btn-primary">Book Your Detail</Link>
+          <p className="section-label">{c.gallery_label}</p>
+          <h1 className="section-title">{c.gallery_title}</h1>
+          <p className="section-sub" style={{ margin: '0 auto 2rem' }}>{c.gallery_subtitle}</p>
+          <Link to="/booking" className="btn-primary">{c.gallery_cta}</Link>
         </div>
       </section>
 
@@ -156,10 +158,10 @@ export default function Gallery() {
       </section>
 
       <footer>
-        <div className="footer-logo">iDetail Dynasty</div>
-        <p>Premium car detailing -- done right, every time.<br />
+        <div className="footer-logo">{c.brand_name}</div>
+        <p>{c.footer_tagline}<br />
           {info.location} | {info.phone} | {info.email}</p>
-        <p style={{ marginTop: '1rem', fontSize: '0.75rem' }}>© 2026 iDetail Dynasty. All rights reserved.</p>
+        <p style={{ marginTop: '1rem', fontSize: '0.75rem' }}>© {new Date().getFullYear()} {c.brand_name}. All rights reserved.</p>
       </footer>
     </>
   )

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
+import { useContent } from '../content'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
 
 export default function Login({ setUser }) {
+  const c = useContent()
   const [form, setForm] = useState({ email: '', password: '' })
   const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
@@ -53,7 +55,7 @@ export default function Login({ setUser }) {
   return (
     <div className="auth-page">
       <div className="auth-box">
-        <div className="auth-logo">iDetail Dynasty</div>
+        <div className="auth-logo">{c.brand_name}</div>
         <p className="auth-sub">Welcome back — sign in to your account</p>
 
         {error && <div className="error-msg">{error}</div>}
