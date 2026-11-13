@@ -2,6 +2,7 @@
 import { supabase } from '../supabase'
 import { CalendarIcon, ClockIcon, CheckIcon, StarIcon, UserIcon, TrendIcon } from '../components/icons'
 import { useNavigate } from 'react-router-dom'
+import ServiceManager from '../components/admin/ServiceManager'
 
 function ReviewCard({ review: r, onDelete, onReply }) {
   const [reply, setReply] = useState(r.admin_reply || '')
@@ -53,13 +54,10 @@ export default function Admin({ user }) {
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterDate, setFilterDate] = useState('')
   const [editBooking, setEditBooking] = useState(null)
-  const [editService, setEditService] = useState(null)
   const [selectedCustomer, setSelectedCustomer] = useState(null)
   const [newPromo, setNewPromo] = useState({ tag: '', title: '', description: '', code: '', expiry: '' })
-  const [newService, setNewService] = useState({ name: '', description: '', price: '', duration: '', category: '', activities: '', badge: '', suv_surcharge: '' })
   const [newPayment, setNewPayment] = useState({ booking_id: '', customer_name: '', customer_email: '', amount: '', method: 'cash', status: 'paid' })
   const [promoMsg, setPromoMsg] = useState('')
-  const [serviceMsg, setServiceMsg] = useState('')
   const [paymentMsg, setPaymentMsg] = useState('')
   const [staff, setStaff] = useState([])
   const [inventory, setInventory] = useState([])
@@ -150,37 +148,6 @@ export default function Admin({ user }) {
     }).eq('id', editBooking.id)
     setEditBooking(null)
     await fetchAll()
-  }
-
-  // SERVICE ACTIONS
-  const saveEditService = async () => {
-    await supabase.from('services').update({
-      name: editService.name,
-      description: editService.description,
-      price: parseFloat(editService.price),
-      duration: editService.duration,
-      category: editService.category,
-      active: editService.active,
-      activities: editService.activities || '',
-    }).eq('id', editService.id)
-    setEditService(null)
-    await fetchAll()
-  }
-
-  const deleteService = async (id) => {
-    if (!window.confirm('Delete this service?')) return
-    await supabase.from('services').delete().eq('id', id)
-    await fetchAll()
-  }
-
-  const addService = async (e) => {
-    e.preventDefault()
-    if (!newService.name || !newService.price) { setServiceMsg('Name and price are required.'); return }
-    await supabase.from('services').insert({ ...newService, price: parseFloat(newService.price), active: true, activities: newService.activities || '', badge: newService.badge || '', suv_surcharge: parseInt(newService.suv_surcharge) || 0 })
-    setServiceMsg('Service added! ✅')
-    setNewService({ name: '', description: '', price: '', duration: '', category: '', activities: '', badge: '', suv_surcharge: '' })
-    await fetchAll()
-    setTimeout(() => setServiceMsg(''), 3000)
   }
 
   // PAYMENT ACTIONS
@@ -507,7 +474,7 @@ export default function Admin({ user }) {
               fontWeight: tab === t ? '500' : '300',
               transition: 'all 0.25s',
               whiteSpace: 'nowrap',
-            }}>{t}</button>
+            }}>{t === 'services' ? 'Services & pricing' : t}</button>
           ))}
         </div>
 
@@ -768,154 +735,8 @@ export default function Admin({ user }) {
               </div>
             )}
 
-            {/* =================== SERVICES TAB =================== */}
-            {tab === 'services' && (
-              <div>
-                {/* EDIT SERVICE MODAL */}
-                {editService && (
-                  <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-                    <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.24)', padding: '2rem', width: '100%', maxWidth: '500px' }}>
-                      <h3 style={{ fontFamily: 'var(--font-display)', color: 'var(--gold)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Edit Service</h3>
-                      <div className="form-grid">
-                        <div className="form-group full">
-                          <label>Service Name</label>
-                          <input value={editService.name} onChange={e => setEditService({ ...editService, name: e.target.value })} />
-                        </div>
-                        <div className="form-group full">
-                          <label>Description</label>
-                          <textarea value={editService.description || ''} onChange={e => setEditService({ ...editService, description: e.target.value })} />
-                        </div>
-                        <div className="form-group full">
-                          <label>Activities (one per line)</label>
-                          <textarea value={editService.activities || ''} onChange={e => setEditService({ ...editService, activities: e.target.value })} placeholder="e.g.&#10;Exterior hand wash&#10;Tire dressing&#10;Window cleaning" style={{ minHeight: '100px' }} />
-                        </div>
-                        <div className="form-group">
-                          <label>Price (RWF)</label>
-                          <input type="number" value={editService.price} onChange={e => setEditService({ ...editService, price: e.target.value })} />
-                        </div>
-                        <div className="form-group">
-                          <label>Duration</label>
-                          <input value={editService.duration || ''} onChange={e => setEditService({ ...editService, duration: e.target.value })} placeholder="e.g. 1 hour" />
-                        </div>
-                        <div className="form-group">
-                          <label>Category</label>
-                          <select value={editService.category || ''} onChange={e => setEditService({ ...editService, category: e.target.value })}>
-                            <option value="exterior">Exterior</option>
-                            <option value="interior">Interior</option>
-                            <option value="combo">Combo</option>
-                          </select>
-                        </div>
-                        <div className="form-group">
-                          <label>Status</label>
-                          <select value={editService.active ? 'active' : 'inactive'} onChange={e => setEditService({ ...editService, active: e.target.value === 'active' })}>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                          </select>
-                        </div>
-                        <div className="form-group">
-                          <label>Badge <span style={{color:'var(--gray)',fontWeight:300}}>(e.g. Most Popular)</span></label>
-                          <input value={editService.badge || ''} onChange={e => setEditService({ ...editService, badge: e.target.value })} placeholder="Most Popular" />
-                        </div>
-                        <div className="form-group">
-                          <label>SUV Surcharge (RWF)</label>
-                          <input type="number" value={editService.suv_surcharge || ''} onChange={e => setEditService({ ...editService, suv_surcharge: e.target.value })} placeholder="5000" />
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
-                        <button onClick={saveEditService} style={{ flex: 1, padding: '0.9rem', background: 'var(--gold)', color: 'var(--black)', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', letterSpacing: '1px' }}>Save Changes</button>
-                        <button onClick={() => setEditService(null)} style={{ flex: 1, padding: '0.9rem', background: 'transparent', color: 'var(--gray)', border: '1px solid var(--gray)', cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Cancel</button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* ADD NEW SERVICE */}
-                <div style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.16)', padding: '2rem', marginBottom: '2rem' }}>
-                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', color: 'var(--gold)', marginBottom: '1.5rem' }}>Add New Service</h3>
-                  {serviceMsg && <div style={{ background: 'rgba(31,96,79,0.08)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{serviceMsg}</div>}
-                  <form onSubmit={addService}>
-                    <div className="form-grid">
-                      <div className="form-group">
-                        <label>Service Name *</label>
-                        <input value={newService.name} onChange={e => setNewService({ ...newService, name: e.target.value })} placeholder="e.g. Engine Bay Cleaning" />
-                      </div>
-                      <div className="form-group">
-                        <label>Price (RWF) *</label>
-                        <input type="number" value={newService.price} onChange={e => setNewService({ ...newService, price: e.target.value })} placeholder="50" />
-                      </div>
-                      <div className="form-group">
-                        <label>Duration</label>
-                        <input value={newService.duration} onChange={e => setNewService({ ...newService, duration: e.target.value })} placeholder="e.g. 1 hour" />
-                      </div>
-                      <div className="form-group">
-                        <label>Category</label>
-                        <select value={newService.category} onChange={e => setNewService({ ...newService, category: e.target.value })}>
-                          <option value="">Select category</option>
-                          <option value="exterior">Exterior</option>
-                          <option value="interior">Interior</option>
-                          <option value="combo">Combo</option>
-                        </select>
-                      </div>
-                      <div className="form-group full">
-                        <label>Description</label>
-                        <textarea value={newService.description} onChange={e => setNewService({ ...newService, description: e.target.value })} placeholder="Describe the service..." />
-                      </div>
-                      <div className="form-group">
-                        <label>Badge <span style={{color:'var(--gray)',fontWeight:300}}>(e.g. Most Popular)</span></label>
-                        <input value={newService.badge} onChange={e => setNewService({ ...newService, badge: e.target.value })} placeholder="Most Popular" />
-                      </div>
-                      <div className="form-group">
-                        <label>SUV Surcharge (RWF)</label>
-                        <input type="number" value={newService.suv_surcharge} onChange={e => setNewService({ ...newService, suv_surcharge: e.target.value })} placeholder="5000" />
-                      </div>
-                      <div className="form-group full">
-                        <label>Activities (one per line)</label>
-                        <textarea value={newService.activities} onChange={e => setNewService({ ...newService, activities: e.target.value })} placeholder="e.g.&#10;Exterior hand wash&#10;Tire dressing&#10;Window cleaning" style={{ minHeight: '100px' }} />
-                      </div>
-                      <div className="form-submit">
-                        <button type="submit">Add Service</button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-
-                {/* SERVICES LIST */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-                  {services.map(s => (
-                    <div key={s.id} style={{ background: 'var(--dark)', border: `1px solid ${s.active ? 'rgba(31,96,79,0.16)' : 'rgba(16,52,43,0.05)'}`, padding: '1.5rem', position: 'relative' }}>
-                      {!s.active && (
-                        <span style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(217,96,79,0.2)', color: '#D9604F', fontSize: '0.7rem', padding: '0.2rem 0.5rem', letterSpacing: '1px' }}>INACTIVE</span>
-                      )}
-                      <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '1.2rem', color: s.active ? 'var(--white)' : 'var(--gray)', marginBottom: '0.5rem' }}>{s.name}</h4>
-                      <p style={{ color: 'var(--gray)', fontSize: '0.82rem', marginBottom: '0.8rem' }}>{s.description}</p>
-                      {s.activities && s.activities.trim() && (
-                        <ul style={{ padding: 0, listStyle: 'none', marginBottom: '0.8rem' }}>
-                          {s.activities.split('\n').filter(a => a.trim()).slice(0, 4).map((a, i) => (
-                            <li key={i} style={{ color: 'var(--gray)', fontSize: '0.78rem', padding: '0.2rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                              <span style={{ color: 'var(--gold)', fontSize: '0.55rem' }}>&#10022;</span>{a.trim()}
-                            </li>
-                          ))}
-                          {s.activities.split('\n').filter(a => a.trim()).length > 4 && (
-                            <li style={{ color: 'var(--gold)', fontSize: '0.75rem', marginTop: '0.2rem' }}>+{s.activities.split('\n').filter(a => a.trim()).length - 4} more</li>
-                          )}
-                        </ul>
-                      )}
-                      {(!s.activities || !s.activities.trim()) && (
-                        <p style={{ color: 'rgba(31,96,79,0.32)', fontSize: '0.75rem', marginBottom: '0.8rem', fontStyle: 'italic' }}>No activities listed — click Edit to add</p>
-                      )}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                        <span style={{ color: 'var(--gold)', fontWeight: '500' }}>RWF {s.price}</span>
-                        <span style={{ color: 'var(--gray)', fontSize: '0.8rem' }}>⏱ {s.duration}</span>
-                      </div>
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button onClick={() => setEditService(s)} style={{ flex: 1, background: 'rgba(31,96,79,0.08)', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>✏️ Edit</button>
-                        <button onClick={() => deleteService(s.id)} style={{ flex: 1, background: 'rgba(217,96,79,0.1)', color: '#D9604F', border: '1px solid #D9604F', padding: '0.4rem', fontSize: '0.75rem', cursor: 'pointer' }}>🗑 Delete</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* =================== SERVICES & PRICING TAB =================== */}
+            {tab === 'services' && <ServiceManager onServicesChange={setServices} />}
 
             {/* =================== PAYMENTS TAB =================== */}
             {tab === 'payments' && (

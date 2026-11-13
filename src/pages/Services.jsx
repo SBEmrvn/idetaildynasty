@@ -6,6 +6,8 @@ import { useFeatures } from '../App'
 export default function Services() {
   const features = useFeatures()
   const [services, setServices] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
   const [calcService, setCalcService] = useState('')
   const [calcSize, setCalcSize] = useState('sedan')
   const [filter, setFilter] = useState('all')
@@ -13,8 +15,10 @@ export default function Services() {
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await supabase.from('services').select('*').eq('active', true).order('created_at')
-      setServices(data || [])
+      const { data, error } = await supabase.from('services').select('*').eq('active', true).order('created_at')
+      if (error) setLoadError(true)
+      else { setServices(data || []); setLoadError(false) }
+      setLoading(false)
     }
     fetch()
 
@@ -73,6 +77,16 @@ export default function Services() {
             </div>
           )}
 
+          {loading && (
+            <div className="empty" style={{ maxWidth: 1100, margin: '0 auto' }}><span className="spinner" /> <span style={{ marginLeft: 8 }}>Loading services…</span></div>
+          )}
+          {!loading && loadError && services.length === 0 && (
+            <div className="empty" style={{ maxWidth: 1100, margin: '0 auto' }}>
+              <p style={{ marginBottom: 12 }}>We couldn't load our services right now.</p>
+              <button className="btn-outline" onClick={() => window.location.reload()}>Try again</button>
+            </div>
+          )}
+
           <div className="services-grid">
             {filtered.map((s) => (
               <div className="service-card" key={s.id} style={{ position: 'relative', border: s.badge ? '1px solid rgba(31,96,79,0.4)' : undefined }}>
@@ -91,6 +105,9 @@ export default function Services() {
                 {/* NAME & DESC */}
                 <h3 className="service-name" style={{ marginTop: s.badge ? '0.8rem' : 0 }}>{s.name}</h3>
                 <p className="service-desc">{s.description}</p>
+                {s.duration && (
+                  <span className="mini-chip" style={{ alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 5, textTransform: 'none' }}>⏱ {s.duration}</span>
+                )}
 
                 {/* ACTIVITIES */}
                 {s.activities && s.activities.trim() ? (
@@ -107,7 +124,7 @@ export default function Services() {
                             <span style={{ color: 'var(--gold)', fontSize: '0.55rem', flexShrink: 0 }}>&#10022;</span>
                             <span style={{ color: 'var(--white)', fontSize: '0.82rem', fontWeight: '500' }}>{item.title}</span>
                           </div>
-                          {item.desc && <p style={{ color: 'var(--gray)', fontSize: '0.78rem', lineHeight: '1.5', marginTop: '0.2rem', paddingLeft: '1rem' }}>{item.desc}</p>}
+                          {item.desc && item.desc !== '—' && <p style={{ color: 'var(--gray)', fontSize: '0.78rem', lineHeight: '1.5', marginTop: '0.2rem', paddingLeft: '1rem' }}>{item.desc}</p>}
                         </li>
                       ))
                     })()}

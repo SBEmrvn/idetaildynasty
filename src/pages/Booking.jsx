@@ -14,6 +14,7 @@ export default function Booking({ user }) {
   const [searchParams] = useSearchParams()
   const presetDate = /^\d{4}-\d{2}-\d{2}$/.test(searchParams.get('date') || '') ? searchParams.get('date') : ''
   const [services, setServices] = useState([])
+  const [servicesState, setServicesState] = useState('loading')
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -30,8 +31,10 @@ export default function Booking({ user }) {
 
   useEffect(() => {
     const fetch = async () => {
-      const { data } = await supabase.from('services').select('id, name, price, badge, suv_surcharge').eq('active', true).order('created_at')
+      const { data, error } = await supabase.from('services').select('id, name, price, badge, suv_surcharge, duration').eq('active', true).order('created_at')
+      if (error) { setServicesState('error'); return }
       setServices(data || [])
+      setServicesState('ready')
     }
     fetch()
 
@@ -165,10 +168,10 @@ export default function Booking({ user }) {
             <div className="form-group full">
               <label>Select Service *</label>
               <select name="service" value={form.service} onChange={handle}>
-                <option value="">— Choose a service —</option>
+                <option value="">{servicesState === 'loading' ? 'Loading services…' : servicesState === 'error' ? 'Could not load services, please refresh' : '— Choose a service —'}</option>
                 {services.map((s) => (
                   <option key={s.id} value={s.name}>
-                    {s.badge ? `★ ` : ''}{s.name} — RWF {Number(s.price).toLocaleString()}{s.suv_surcharge > 0 ? ` (+${Number(s.suv_surcharge).toLocaleString()} SUV)` : ''}
+                    {s.badge ? `★ ` : ''}{s.name} — RWF {Number(s.price).toLocaleString()}{s.suv_surcharge > 0 ? ` (+${Number(s.suv_surcharge).toLocaleString()} SUV)` : ''}{s.duration ? ` · ${s.duration}` : ''}
                   </option>
                 ))}
               </select>
