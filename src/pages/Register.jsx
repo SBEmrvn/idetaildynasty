@@ -84,15 +84,15 @@ export default function Register({ setUser }) {
         <form className="auth-form" onSubmit={submit} autoComplete="off">
           <div className="form-group">
             <label>Full Name *</label>
-            <input name="name" value={form.name} onChange={handle} placeholder="John Doe" autoComplete="off" />
+            <input name="name" value={form.name} onChange={handle} placeholder="Your full name" autoComplete="off" />
           </div>
           <div className="form-group">
             <label>Email Address *</label>
-            <input name="email" type="email" value={form.email} onChange={handle} placeholder="john@email.com" autoComplete="off" />
+            <input name="email" type="email" value={form.email} onChange={handle} placeholder="you@example.com" autoComplete="off" />
           </div>
           <div className="form-group">
             <label>Phone Number</label>
-            <input name="phone" value={form.phone} onChange={handle} placeholder="+000 000 0000" autoComplete="off" />
+            <input name="phone" value={form.phone} onChange={handle} placeholder="+250 7XX XXX XXX" autoComplete="off" />
           </div>
           <div className="form-group" style={{ position: 'relative' }}>
             <label>Password *</label>

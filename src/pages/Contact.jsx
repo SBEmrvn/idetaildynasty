@@ -159,15 +159,15 @@ export default function Contact() {
                 <div className="form-grid">
                   <div className="form-group">
                     <label>Full Name *</label>
-                    <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="John Doe" />
+                    <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Your full name" />
                   </div>
                   <div className="form-group">
                     <label>Email *</label>
-                    <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="john@email.com" />
+                    <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="you@example.com" />
                   </div>
                   <div className="form-group full">
                     <label>Phone</label>
-                    <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="+250 000 000 000" />
+                    <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="+250 7XX XXX XXX" />
                   </div>
                   <div className="form-group full">
                     <label>Message *</label>

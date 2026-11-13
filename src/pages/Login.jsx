@@ -64,7 +64,7 @@ export default function Login({ setUser }) {
             <input
               name="email" type="email"
               value={form.email} onChange={handle}
-              placeholder="john@email.com"
+              placeholder="you@example.com"
               autoComplete="off"
             />
           </div>

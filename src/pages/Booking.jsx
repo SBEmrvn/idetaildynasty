@@ -148,15 +148,15 @@ export default function Booking({ user }) {
           <div className="form-grid">
             <div className="form-group">
               <label>Full Name *</label>
-              <input name="name" value={form.name} onChange={handle} placeholder="John Doe" />
+              <input name="name" value={form.name} onChange={handle} placeholder="Your full name" />
             </div>
             <div className="form-group">
               <label>Email *</label>
-              <input name="email" type="email" value={form.email} onChange={handle} placeholder="john@email.com" />
+              <input name="email" type="email" value={form.email} onChange={handle} placeholder="you@example.com" />
             </div>
             <div className="form-group">
               <label>Phone Number</label>
-              <input name="phone" value={form.phone} onChange={handle} placeholder="+000 000 0000" />
+              <input name="phone" value={form.phone} onChange={handle} placeholder="+250 7XX XXX XXX" />
             </div>
             <div className="form-group">
               <label>Car Model</label>

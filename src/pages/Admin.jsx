@@ -942,11 +942,11 @@ export default function Admin({ user }) {
                     <div className="form-grid">
                       <div className="form-group">
                         <label>Customer Name *</label>
-                        <input value={newPayment.customer_name} onChange={e => setNewPayment({ ...newPayment, customer_name: e.target.value })} placeholder="John Doe" />
+                        <input value={newPayment.customer_name} onChange={e => setNewPayment({ ...newPayment, customer_name: e.target.value })} placeholder="Your full name" />
                       </div>
                       <div className="form-group">
                         <label>Customer Email</label>
-                        <input value={newPayment.customer_email} onChange={e => setNewPayment({ ...newPayment, customer_email: e.target.value })} placeholder="john@email.com" />
+                        <input value={newPayment.customer_email} onChange={e => setNewPayment({ ...newPayment, customer_email: e.target.value })} placeholder="you@example.com" />
                       </div>
                       <div className="form-group">
                         <label>Amount (RWF) *</label>
@@ -1069,9 +1069,9 @@ export default function Admin({ user }) {
                   {staffMsg && <div style={{ background: 'rgba(31,96,79,0.08)', border: '1px solid var(--gold)', color: 'var(--gold)', padding: '0.8rem', marginBottom: '1rem', fontSize: '0.85rem' }}>{staffMsg}</div>}
                   <form onSubmit={addStaff}>
                     <div className="form-grid">
-                      <div className="form-group"><label>Full Name *</label><input value={newStaff.name} onChange={e => setNewStaff({ ...newStaff, name: e.target.value })} placeholder="e.g. John Doe" /></div>
-                      <div className="form-group"><label>Email *</label><input type="email" value={newStaff.email} onChange={e => setNewStaff({ ...newStaff, email: e.target.value })} placeholder="john@email.com" /></div>
-                      <div className="form-group"><label>Phone</label><input value={newStaff.phone} onChange={e => setNewStaff({ ...newStaff, phone: e.target.value })} placeholder="+250 000 000 000" /></div>
+                      <div className="form-group"><label>Full Name *</label><input value={newStaff.name} onChange={e => setNewStaff({ ...newStaff, name: e.target.value })} placeholder="Staff member's full name" /></div>
+                      <div className="form-group"><label>Email *</label><input type="email" value={newStaff.email} onChange={e => setNewStaff({ ...newStaff, email: e.target.value })} placeholder="you@example.com" /></div>
+                      <div className="form-group"><label>Phone</label><input value={newStaff.phone} onChange={e => setNewStaff({ ...newStaff, phone: e.target.value })} placeholder="+250 7XX XXX XXX" /></div>
                       <div className="form-group">
                         <label>Role</label>
                         <select value={newStaff.role} onChange={e => setNewStaff({ ...newStaff, role: e.target.value })}>
@@ -1428,7 +1428,7 @@ export default function Admin({ user }) {
                   <div className="form-grid">
                     <div className="form-group">
                       <label>Phone Number</label>
-                      <input value={settings.phone || ''} onChange={e => setSettings({ ...settings, phone: e.target.value })} placeholder="+250 000 000 000" />
+                      <input value={settings.phone || ''} onChange={e => setSettings({ ...settings, phone: e.target.value })} placeholder="+250 7XX XXX XXX" />
                     </div>
                     <div className="form-group">
                       <label>WhatsApp Number</label>

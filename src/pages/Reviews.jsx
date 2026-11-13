@@ -78,7 +78,7 @@ export default function Reviews({ user }) {
                 <div className="form-grid">
                   <div className="form-group">
                     <label>Your Name *</label>
-                    <input value={form.customer_name} onChange={e => setForm({ ...form, customer_name: e.target.value })} placeholder="John Doe" />
+                    <input value={form.customer_name} onChange={e => setForm({ ...form, customer_name: e.target.value })} placeholder="Your full name" />
                   </div>
                   <div className="form-group">
                     <label>Service Received</label>
