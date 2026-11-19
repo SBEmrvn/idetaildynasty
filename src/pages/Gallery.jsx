@@ -1,25 +1,165 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useContent } from '../content'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabase'
+import BeforeAfter from '../components/BeforeAfter'
+import { ImageIcon, CalendarPlusIcon, ChevronLeft, ChevronRight, XIcon, ArrowUpRight } from '../components/icons'
+
+// Admin uploads store photos in order: first = before, second = after, rest = extra shots.
+const photosOf = (item) => (item.images?.length ? item.images : [item.before_url, item.after_url]).filter(Boolean)
+
+// "INTERIOR DETAILING " → "Interior Detailing"; mixed-case text is left as typed.
+const tidy = (s = '') => {
+  const t = String(s).trim().replace(/\s+/g, ' ')
+  if (!t || t !== t.toUpperCase() || !/[A-Z]/.test(t)) return t
+  return t.toLowerCase().replace(/\b([a-z])/g, (m) => m.toUpperCase()).replace(/\b(And|Or|Of|The|With)\b/g, (w) => w.toLowerCase()).replace(/^./, (m) => m.toUpperCase())
+}
+
+const normalize = (item) => {
+  const photos = photosOf(item)
+  return {
+    ...item,
+    photos,
+    hasCompare: photos.length >= 2,
+    title: tidy(item.title) || 'Detail job',
+    service: tidy(item.service),
+    caption: (item.caption || '').trim(),
+  }
+}
+
+function Lightbox({ jobs, index, onClose, onJob }) {
+  const job = jobs[index]
+  const [mode, setMode] = useState(job.hasCompare ? 'compare' : 'photos')
+  const [photo, setPhoto] = useState(0)
+  const touchX = useRef(null)
+  const panelRef = useRef(null)
+
+  const step = useCallback((d) => {
+    if (mode === 'photos' && job.photos.length > 1) setPhoto(p => (p + d + job.photos.length) % job.photos.length)
+    else if (jobs.length > 1) onJob((index + d + jobs.length) % jobs.length)
+  }, [mode, job, jobs.length, index, onJob])
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose()
+      // In compare mode the arrows belong to the slider when it has focus
+      if (e.target?.closest?.('.gl-stage .ba-knob')) return
+      if (e.key === 'ArrowRight') step(1)
+      if (e.key === 'ArrowLeft') step(-1)
+    }
+    window.addEventListener('keydown', onKey)
+    panelRef.current?.querySelector('.gl-icon')?.focus({ preventScroll: true })
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev }
+  }, [onClose, step])
+
+  const label = mode === 'photos'
+    ? (job.hasCompare && photo === 0 ? 'Before' : job.hasCompare && photo === 1 ? 'After' : `Photo ${photo + 1}`)
+    : null
+
+  return (
+    <div className="gl-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }} role="dialog" aria-modal="true" aria-label={job.title}>
+      <div className="gl-panel" ref={panelRef}>
+        <header className="gl-head">
+          <div style={{ minWidth: 0 }}>
+            <h3>{job.title}</h3>
+            <p>{job.service}{jobs.length > 1 && <span> · Job {index + 1} of {jobs.length}</span>}</p>
+          </div>
+          <div className="gl-head-actions">
+            {job.hasCompare && job.photos.length > 0 && (
+              <div className="gl-switch" role="tablist" aria-label="View mode">
+                <button role="tab" aria-selected={mode === 'compare'} className={mode === 'compare' ? 'on' : ''} onClick={() => setMode('compare')}>Compare</button>
+                <button role="tab" aria-selected={mode === 'photos'} className={mode === 'photos' ? 'on' : ''} onClick={() => setMode('photos')}>Photos ({job.photos.length})</button>
+              </div>
+            )}
+            <button className="gl-icon" onClick={onClose} aria-label="Close"><XIcon /></button>
+          </div>
+        </header>
+
+        <div
+          className="gl-stage"
+          onTouchStart={(e) => { touchX.current = e.touches[0].clientX }}
+          onTouchEnd={(e) => {
+            if (mode === 'compare' || touchX.current == null) return
+            const dx = e.changedTouches[0].clientX - touchX.current
+            if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1)
+            touchX.current = null
+          }}
+        >
+          {mode === 'compare' && job.hasCompare ? (
+            <BeforeAfter key={job.id} before={job.photos[0]} after={job.photos[1]} alt={job.title} className="ba-xl" eager />
+          ) : (
+            <div className="gl-photo">
+              <img key={job.photos[photo]} src={job.photos[photo]} alt={`${job.title} ${label || ''}`} />
+              {label && <span className={`ba-tag ${photo === 0 && job.hasCompare ? 'before' : 'after'}`}>{label}</span>}
+            </div>
+          )}
+          {(jobs.length > 1 || (mode === 'photos' && job.photos.length > 1)) && (
+            <>
+              <button className="gl-nav prev" onClick={() => step(-1)} aria-label={mode === 'photos' ? 'Previous photo' : 'Previous job'}><ChevronLeft /></button>
+              <button className="gl-nav next" onClick={() => step(1)} aria-label={mode === 'photos' ? 'Next photo' : 'Next job'}><ChevronRight /></button>
+            </>
+          )}
+        </div>
+
+        <footer className="gl-foot">
+          {job.photos.length > 1 && (
+            <div className="gl-thumbs">
+              {job.photos.map((url, i) => (
+                <button key={url + i} className={`gl-thumb${mode === 'photos' && photo === i ? ' on' : ''}`} onClick={() => { setMode('photos'); setPhoto(i) }} aria-label={`Show photo ${i + 1}`}>
+                  <img src={url} alt="" loading="lazy" />
+                  {job.hasCompare && i < 2 && <span>{i === 0 ? 'Before' : 'After'}</span>}
+                </button>
+              ))}
+            </div>
+          )}
+          {job.caption && <p className="gl-caption">{job.caption}</p>}
+          <Link to="/booking" className="btn-peach" onClick={onClose} style={{ alignSelf: 'flex-start' }}><CalendarPlusIcon /> Book {job.service ? job.service.toLowerCase() : 'this detail'}</Link>
+        </footer>
+      </div>
+    </div>
+  )
+}
+
+function JobCard({ job, onOpen }) {
+  return (
+    <article className="card gl-card">
+      <div className="gl-media">
+        {job.hasCompare ? (
+          <BeforeAfter before={job.photos[0]} after={job.photos[1]} alt={job.title} hint={false} />
+        ) : job.photos[0] ? (
+          <button className="gl-single" onClick={onOpen} aria-label={`Open ${job.title}`}><img src={job.photos[0]} alt={job.title} loading="lazy" decoding="async" /></button>
+        ) : (
+          <div className="gl-single empty"><ImageIcon /></div>
+        )}
+        {job.photos.length > 2 && <span className="gl-count"><ImageIcon /> {job.photos.length}</span>}
+      </div>
+      <div className="gl-body">
+        {job.service && <span className="mini-chip">{job.service}</span>}
+        <h3 className="gl-title">{job.title}</h3>
+        {job.caption && <p className="gl-excerpt">{job.caption}</p>}
+        <div className="gl-actions">
+          <button className="btn-outline btn-sm" onClick={onOpen}>View full job <ArrowUpRight /></button>
+        </div>
+      </div>
+    </article>
+  )
+}
 
 export default function Gallery() {
   const c = useContent()
-  const [items, setItems] = useState([])
+  const [raw, setRaw] = useState([])
+  const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [info, setInfo] = useState({ phone: '+000 000 0000', email: 'hello@idetaildynasty.com', location: 'Kigali, Rwanda' })
-  const [lightbox, setLightbox] = useState(null) // { item, imgIndex }
-
-  useEffect(() => {
-    const onKey = e => { if (e.key === 'Escape') setLightbox(null) }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  const [open, setOpen] = useState(null) // index into `filtered`
 
   useEffect(() => {
     const fetch = async () => {
       const { data } = await supabase.from('gallery').select('*').order('created_at', { ascending: false })
-      setItems(data || [])
+      setRaw(data || [])
+      setLoading(false)
     }
     fetch()
     const fetchInfo = async () => {
@@ -33,129 +173,100 @@ export default function Gallery() {
     return () => supabase.removeChannel(channel)
   }, [])
 
-  const serviceNames = ['all', ...new Set(items.map(i => i.service).filter(Boolean))]
+  const items = useMemo(() => raw.map(normalize).filter(i => i.photos.length), [raw])
+  const services = useMemo(() => {
+    const m = new Map()
+    items.forEach(i => { if (i.service) m.set(i.service, (m.get(i.service) || 0) + 1) })
+    return [...m.entries()]
+  }, [items])
   const filtered = filter === 'all' ? items : items.filter(i => i.service === filter)
+  const [featured, ...rest] = filtered
+  const totalPhotos = items.reduce((n, i) => n + i.photos.length, 0)
 
   return (
     <>
       <section className="page-hero" style={{ textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(31,96,79,0.064) 0%, transparent 70%)' }} />
         <div style={{ position: 'relative', zIndex: 1, padding: '0 2rem' }}>
           <p className="section-label">{c.gallery_label}</p>
           <h1 className="section-title">{c.gallery_title}</h1>
-          <p className="section-sub" style={{ margin: '0 auto 2rem' }}>{c.gallery_subtitle}</p>
+          <p className="section-sub" style={{ margin: '0 auto 1.6rem' }}>{c.gallery_subtitle}</p>
           <Link to="/booking" className="btn-primary">{c.gallery_cta}</Link>
+          {items.length > 0 && (
+            <div className="gl-stats">
+              <span><b>{items.length}</b> transformation{items.length === 1 ? '' : 's'}</span>
+              <span><b>{totalPhotos}</b> photos</span>
+              {services.length > 0 && <span><b>{services.length}</b> service{services.length === 1 ? '' : 's'}</span>}
+            </div>
+          )}
         </div>
       </section>
 
-      <section style={{ background: 'transparent', padding: '1rem 0 2rem' }}>
-        {items.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '4rem' }}>
-            <p style={{ color: 'var(--gray)', fontSize: '1rem' }}>Gallery coming soon -- check back after our first jobs!</p>
-            <Link to="/booking" className="btn-primary" style={{ display: 'inline-block', marginTop: '1.5rem' }}>Be Our First Client</Link>
+      <section className="gl-section">
+        {loading ? (
+          <div className="gl-grid">
+            {[0, 1, 2].map(i => <div key={i} className="card gl-card skeleton"><div className="gl-media" /><div className="gl-body"><i /><i /><i /></div></div>)}
+          </div>
+        ) : items.length === 0 ? (
+          <div className="empty" style={{ padding: '4rem 1rem' }}>
+            <p style={{ marginBottom: '1.2rem' }}>Our gallery is coming soon. Check back after our first jobs!</p>
+            <Link to="/booking" className="btn-primary">Be our first client</Link>
           </div>
         ) : (
-          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-
-            {/* FILTER PILLS */}
-            {serviceNames.length > 1 && (
-              <div className="pill-tabs" style={{ display: 'flex', gap: '0.4rem', marginBottom: '2.5rem', flexWrap: 'wrap', background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.12)', borderRadius: '50px', padding: '0.4rem', width: 'fit-content' }}>
-                {serviceNames.map(s => (
-                  <button key={s} onClick={() => setFilter(s)} style={{
-                    background: filter === s ? 'var(--gold)' : 'transparent',
-                    border: 'none', color: filter === s ? '#fff' : 'var(--gray)',
-                    fontFamily: 'var(--font-body)', fontSize: '0.75rem',
-                    letterSpacing: '1.5px', textTransform: 'uppercase',
-                    cursor: 'pointer', padding: '0.5rem 1.1rem',
-                    borderRadius: '50px', fontWeight: filter === s ? '500' : '300',
-                    transition: 'all 0.25s', whiteSpace: 'nowrap'
-                  }}>{s === 'all' ? `All (${items.length})` : s}</button>
+          <>
+            {services.length > 1 && (
+              <div className="gl-filters" role="tablist" aria-label="Filter by service">
+                <button role="tab" aria-selected={filter === 'all'} className={filter === 'all' ? 'on' : ''} onClick={() => setFilter('all')}>
+                  All <span>{items.length}</span>
+                </button>
+                {services.map(([name, n]) => (
+                  <button key={name} role="tab" aria-selected={filter === name} className={filter === name ? 'on' : ''} onClick={() => setFilter(name)}>
+                    {name} <span>{n}</span>
+                  </button>
                 ))}
               </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
-              {filtered.map(item => {
-                const imgs = item.images?.length ? item.images : [item.before_url, item.after_url].filter(Boolean)
-                return (
-                  <div key={item.id} onClick={() => setLightbox({ item, imgIndex: 0, imgs })} style={{ background: 'var(--dark)', border: '1px solid rgba(31,96,79,0.12)', overflow: 'hidden', cursor: 'pointer', transition: 'border-color 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(31,96,79,0.4)'}
-                    onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(31,96,79,0.12)'}
-                  >
-                    {/* COVER */}
-                    <div style={{ position: 'relative', paddingBottom: '65%', overflow: 'hidden', background: 'var(--dark2)' }}>
-                      {imgs[0] && <img src={imgs[0]} alt="cover" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />}
-                      <span style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: 'rgba(0,0,0,0.7)', color: 'var(--gold)', fontSize: '0.7rem', padding: '0.2rem 0.6rem' }}>📷 {imgs.length}</span>
-                    </div>
-                    {/* THUMBNAIL STRIP */}
-                    {imgs.length > 1 && (
-                      <div style={{ display: 'flex', gap: '2px', height: '55px' }}>
-                        {imgs.slice(1, 5).map((url, i) => (
-                          <div key={i} style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
-                            <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            {i === 3 && imgs.length > 5 && <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.75rem' }}>+{imgs.length - 5}</div>}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <div style={{ padding: '1rem 1.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <p style={{ color: 'var(--white)', fontWeight: '500', marginBottom: '0.2rem' }}>{item.title || 'Detail Job'}</p>
-                        {item.service && <p style={{ color: 'var(--gold)', fontSize: '0.8rem' }}>{item.service}</p>}
-                      </div>
-                      <span style={{ color: 'var(--gold)', fontSize: '0.72rem', letterSpacing: '1px', whiteSpace: 'nowrap', marginLeft: '1rem' }}>TAP ↗</span>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* LIGHTBOX */}
-            {lightbox && (() => {
-              const { item, imgIndex, imgs } = lightbox
-              return (
-                <div onClick={() => setLightbox(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 1000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-                  {/* CLOSE */}
-                  <button onClick={() => setLightbox(null)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'transparent', border: '1px solid rgba(31,96,79,0.32)', color: 'var(--gold)', fontSize: '1.2rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>✕</button>
-
-                  {/* COUNTER + TITLE */}
-                  <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-                    <p style={{ color: 'var(--white)', fontWeight: '500', fontSize: '1.1rem' }}>{item.title || 'Detail Job'}</p>
-                    {item.service && <p style={{ color: 'var(--gold)', fontSize: '0.8rem', letterSpacing: '1px' }}>{item.service}</p>}
-                    <p style={{ color: 'var(--gray)', fontSize: '0.75rem', marginTop: '0.3rem' }}>{imgIndex + 1} / {imgs.length}</p>
-                  </div>
-
-                  {/* MAIN IMAGE */}
-                  <div onClick={e => e.stopPropagation()} style={{ position: 'relative', maxWidth: '900px', width: '100%' }}>
-                    <img src={imgs[imgIndex]} alt={`Photo ${imgIndex + 1}`} style={{ width: '100%', maxHeight: '68vh', objectFit: 'contain', display: 'block', borderRadius: '2px' }} />
-                    {imgs.length > 1 && (
-                      <>
-                        <button onClick={e => { e.stopPropagation(); setLightbox(prev => ({ ...prev, imgIndex: (prev.imgIndex - 1 + imgs.length) % imgs.length })) }}
-                          style={{ position: 'absolute', left: '-3rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: '1px solid rgba(31,96,79,0.32)', color: 'var(--gold)', fontSize: '1.4rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>‹</button>
-                        <button onClick={e => { e.stopPropagation(); setLightbox(prev => ({ ...prev, imgIndex: (prev.imgIndex + 1) % imgs.length })) }}
-                          style={{ position: 'absolute', right: '-3rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: '1px solid rgba(31,96,79,0.32)', color: 'var(--gold)', fontSize: '1.4rem', width: '2.5rem', height: '2.5rem', cursor: 'pointer', borderRadius: '50%' }}>›</button>
-                      </>
-                    )}
-                  </div>
-
-                  {/* THUMBNAILS */}
-                  {imgs.length > 1 && (
-                    <div onClick={e => e.stopPropagation()} style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap', justifyContent: 'center', maxWidth: '900px' }}>
-                      {imgs.map((url, i) => (
-                        <div key={i} onClick={() => setLightbox(prev => ({ ...prev, imgIndex: i }))} style={{ width: '60px', height: '60px', border: `2px solid ${i === imgIndex ? 'var(--gold)' : 'rgba(16,52,43,0.1)'}`, overflow: 'hidden', cursor: 'pointer', flexShrink: 0, transition: 'border-color 0.2s' }}>
-                          <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {item.caption && <p style={{ color: 'var(--gray)', fontSize: '0.82rem', marginTop: '1rem', textAlign: 'center', maxWidth: '600px', lineHeight: '1.6' }}>{item.caption}</p>}
+            {featured && (
+              <article className="card gl-feature" key={featured.id}>
+                <div className="gl-feature-media">
+                  {featured.hasCompare
+                    ? <BeforeAfter before={featured.photos[0]} after={featured.photos[1]} alt={featured.title} eager />
+                    : <button className="gl-single" onClick={() => setOpen(0)}><img src={featured.photos[0]} alt={featured.title} /></button>}
                 </div>
-              )
-            })()}
-          </div>
+                <div className="gl-feature-body">
+                  <span className="gl-eyebrow">Featured transformation</span>
+                  <h2>{featured.title}</h2>
+                  {featured.service && <span className="mini-chip" style={{ alignSelf: 'flex-start' }}>{featured.service}</span>}
+                  {featured.caption && <p className="gl-story">{featured.caption}</p>}
+                  {featured.caption.length > 380 && (
+                    <button className="link-btn" style={{ alignSelf: 'flex-start' }} onClick={() => setOpen(0)}>Read the full story</button>
+                  )}
+                  <div className="gl-feature-actions">
+                    <Link to="/booking" className="btn-primary"><CalendarPlusIcon /> Book this service</Link>
+                    <button className="btn-outline" onClick={() => setOpen(0)}>All photos ({featured.photos.length})</button>
+                  </div>
+                </div>
+              </article>
+            )}
+
+            {rest.length > 0 && (
+              <>
+                <div className="gl-subhead">
+                  <h3>More transformations</h3>
+                  <span>{rest.length} job{rest.length === 1 ? '' : 's'}</span>
+                </div>
+                <div className="gl-grid">
+                  {rest.map((job, i) => <JobCard key={job.id} job={job} onOpen={() => setOpen(i + 1)} />)}
+                </div>
+              </>
+            )}
+          </>
         )}
       </section>
+
+      {open != null && filtered[open] && (
+        <Lightbox key={filtered[open].id} jobs={filtered} index={open} onJob={setOpen} onClose={() => setOpen(null)} />
+      )}
 
       <footer>
         <div className="footer-logo">{c.brand_name}</div>
